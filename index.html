@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#3F5B3A"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Caminho da Fé"><meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#3F5B3A"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="icon-180.png"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Caminho da Fé"><meta name="color-scheme" content="light dark">
 <title>Meu Caminho da Fé</title>
 <style>
 :root{--warnbg:#FBE4D4;--note:#FFF6DD;--noteb:#E8D28A;--notet:#5a4a10;--line2:#eee3cf;--kbg:#E8E8E8;color-scheme:light;--moss:#3F5B3A;--moss-d:#2C4129;--moss-l:#DDE6D3;--sand:#EFE8D8;--paper:#FBF8F1;--card:#fff;--clay:#A5603A;--ink:#26301F;--mute:#6B6A58;--line:#DDD3BC;--warn:#B3541E;--ok:#2F7A3E;--arrow:#F2C230;--r:14px}
@@ -17,12 +17,13 @@ button.card.ramal{display:block;width:100%;text-align:left;cursor:pointer;color:
 svg.mapa{width:100%;height:auto;display:block}svg.mapa .cn{stroke:var(--ink);stroke-opacity:.3;stroke-linejoin:round;stroke-linecap:round}svg.mapa .cn.mj{stroke-opacity:.5}:root[data-theme=dark] svg.mapa .terreno{opacity:.18}@media(prefers-color-scheme:dark){:root:not([data-theme=light]) svg.mapa .terreno{opacity:.18}}
 svg.mapa text{font:600 10px system-ui,sans-serif;fill:var(--ink)}svg.mapa .mu{fill:var(--mute);font-weight:500}
 #mapsvgbox{touch-action:none;cursor:grab;border-radius:12px;overflow:hidden;background:var(--sand)}#mapsvgbox:active{cursor:grabbing}.mapbox{position:relative}.mapctl{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.mapctl button{min-width:48px;min-height:40px;border-radius:10px;border:1.5px solid var(--moss-d);background:var(--card);color:var(--moss-d);font:600 .82rem system-ui,sans-serif;cursor:pointer;padding:0 11px}
+.seg{display:flex;background:var(--sand);border-radius:12px;padding:4px;gap:4px;margin:0 0 12px}.seg button{flex:1;border:0;background:none;border-radius:9px;min-height:42px;font:600 .92rem system-ui,sans-serif;color:var(--moss-d);cursor:pointer}.seg button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.22)}
 body.hc{--mute:#3d3d30;--line:#9d927a;--paper:#fff}
 h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;margin:0;color:var(--moss-d)}
 h2{font-size:1.35rem;margin:22px 0 10px}h3{font-size:1.05rem;margin:0 0 6px}
 header.top{background:var(--moss);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 12px;position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px}
 header.top b{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:1.15rem;font-weight:700;letter-spacing:.2px}
-header.top .arrow{transform:rotate(-90deg)}header.top small{display:block;opacity:.8;font-size:.72rem}
+header.top .arrow{height:36px;width:auto;transform:none}header.top small{display:block;opacity:.8;font-size:.72rem}
 .arrow{width:26px;height:26px;flex:none}
 main{overflow-x:clip;max-width:880px;margin:0 auto;padding:12px 14px 30px}
 nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:30}
@@ -89,7 +90,7 @@ details>summary{cursor:pointer;font-weight:600;color:var(--moss);padding:6px 0}
 </style>
 </head>
 <body>
-<header class="top"><svg class="arrow" viewBox="0 0 24 24"><path d="M4 12h13m-5-6 6 6-6 6" fill="none" stroke="#F2C230" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Meu Caminho da Fé</b><small id="sub">Ramal Águas da Prata → Aparecida</small></div></header>
+<header class="top"><img class="arrow" alt="" src="data:image/png;base64,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"><div><b>Meu Caminho da Fé</b><small id="sub">Ramal Águas da Prata → Aparecida</small></div></header>
 <main id="main"></main>
 <nav class="tabs" id="nav"></nav>
 <dialog id="dlg"><div class="hd"><b id="dlgT"></b><button type="button" data-a="closeDlg" aria-label="Fechar">×</button></div><div class="bd" id="dlgB"></div></dialog>
@@ -138,6 +139,7 @@ function proximas(st,hoje,f={}){const at=kmAtual(st);
     if(f.precoMax&&!(x.h.preco_min!=null&&x.h.preco_min<=f.precoMax))return false;
     if(f.disp&&f.disp!=='todas'&&(x.h.disponibilidade||'desconhecida')!==f.disp)return false;
     if(!temComodidades(x.h,f.am))return false;
+    if(f.cred&&!x.h.credencial)return false;
     if(f.q&&!norm(x.h.nome+' '+x.h.municipio).includes(norm(f.q)))return false;
     return true;}).sort((a,b)=>a.dist-b.dist||a.h.nome.localeCompare(b.h.nome));}
 const norm=(s)=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
@@ -205,8 +207,8 @@ function gpsToKm(lat,lng){const p=_xy(lat,lng);let best=null;for(let i=1;i<TRILH
   return{km:round2(best.km),distKm:round2(best.dist)};}
 
 /* ---- comodidades (lidas dos ícones e siglas da planilha) ---- */
-const AMEN={wifi:'Wi-Fi',cafe:'Café da manhã',refeicoes:'Refeições',lavanderia:'Lavanderia',estacionamento:'Estacionamento',estac_bike:'Estac. p/ bike',apoio_bike:'Apoio p/ bike',piscina:'Piscina',sala_jogos:'Sala de jogos',souvenir:'Loja de souvenir',escalda_pes:'Escalda-pés',carregador:'Carregador de mochila',translado:'Translado/apoio',camping:'Camping',ar_condicionado:'Ar-condicionado',ventilador:'Ventilador',tv:'TV',frigobar:'Frigobar',banheiro_privativo:'Banheiro privativo',banheiro_coletivo:'Banheiro coletivo',quarto_individual:'Quarto individual',quarto_duplo:'Quarto duplo',quarto_triplo:'Quarto triplo ou mais',beliche:'Beliche',pix:'PIX',cartao:'Cartão'};
-const AMEN_GRUPOS=[['Serviços',['wifi','cafe','refeicoes','lavanderia','estacionamento','estac_bike','apoio_bike','piscina','sala_jogos','souvenir','escalda_pes','carregador','translado','camping']],['Quarto',['ar_condicionado','ventilador','tv','frigobar','banheiro_privativo','banheiro_coletivo','quarto_individual','quarto_duplo','quarto_triplo','beliche']],['Pagamento',['pix','cartao']]];
+const AMEN={credencial:'Carimbo da credencial',wifi:'Wi-Fi',cafe:'Café da manhã',refeicoes:'Refeições',lavanderia:'Lavanderia',estacionamento:'Estacionamento',estac_bike:'Estac. p/ bike',apoio_bike:'Apoio p/ bike',piscina:'Piscina',sala_jogos:'Sala de jogos',souvenir:'Loja de souvenir',escalda_pes:'Escalda-pés',carregador:'Carregador de mochila',translado:'Translado/apoio',camping:'Camping',ar_condicionado:'Ar-condicionado',ventilador:'Ventilador',tv:'TV',frigobar:'Frigobar',banheiro_privativo:'Banheiro privativo',banheiro_coletivo:'Banheiro coletivo',quarto_individual:'Quarto individual',quarto_duplo:'Quarto duplo',quarto_triplo:'Quarto triplo ou mais',beliche:'Beliche',pix:'PIX',cartao:'Cartão'};
+const AMEN_GRUPOS=[['Serviços',['credencial','wifi','cafe','refeicoes','lavanderia','estacionamento','estac_bike','apoio_bike','piscina','sala_jogos','souvenir','escalda_pes','carregador','translado','camping']],['Quarto',['ar_condicionado','ventilador','tv','frigobar','banheiro_privativo','banheiro_coletivo','quarto_individual','quarto_duplo','quarto_triplo','beliche']],['Pagamento',['pix','cartao']]];
 const temComodidades=(h,am)=>!am||!am.length||am.every(k=>(h.comodidades||[]).includes(k));
 /* ---- CSV ---- */
 const CSV_COLS=['id','nome','municipio','uf','tipo','categoria','km_pdf','ramal','km_inicio','fora_trilha_km','preco_min','preco_max','preco_apartir','preco_texto','incluso','telefones','contato','email','site','instagram','endereco','observacoes','credencial','disponibilidade','pagina_pdf','revisar','origem','notas','comodidades','tipo_acomodacao'];
@@ -786,6 +788,7 @@ const BASE=[
   "revisar": [],
   "origem": "pdf_ed19",
   "comodidades": [
+   "credencial",
    "estac_bike",
    "lavanderia",
    "wifi"
@@ -926,6 +929,7 @@ const BASE=[
    "cafe",
    "camping",
    "cartao",
+   "credencial",
    "estac_bike",
    "estacionamento",
    "lavanderia",
@@ -1127,6 +1131,7 @@ const BASE=[
    "banheiro_privativo",
    "beliche",
    "cafe",
+   "credencial",
    "estac_bike",
    "lavanderia",
    "pix",
@@ -1183,6 +1188,7 @@ const BASE=[
   "origem": "pdf_ed19",
   "comodidades": [
    "cafe",
+   "credencial",
    "estac_bike",
    "estacionamento",
    "pix",
@@ -1406,6 +1412,7 @@ const BASE=[
    "ar_condicionado",
    "cafe",
    "cartao",
+   "credencial",
    "estac_bike",
    "frigobar",
    "lavanderia",
@@ -1459,6 +1466,7 @@ const BASE=[
    "banheiro_privativo",
    "cafe",
    "cartao",
+   "credencial",
    "escalda_pes",
    "estac_bike",
    "estacionamento",
@@ -1552,6 +1560,7 @@ const BASE=[
   "comodidades": [
    "cafe",
    "cartao",
+   "credencial",
    "estac_bike",
    "frigobar",
    "piscina",
@@ -1733,6 +1742,7 @@ const BASE=[
    "banheiro_privativo",
    "cafe",
    "cartao",
+   "credencial",
    "estac_bike",
    "estacionamento",
    "frigobar",
@@ -2351,6 +2361,7 @@ const BASE=[
   "revisar": [],
   "origem": "pdf_ed19",
   "comodidades": [
+   "credencial",
    "refeicoes"
   ],
   "tipo_acomodacao": ""
@@ -2576,6 +2587,7 @@ const BASE=[
   "comodidades": [
    "banheiro_coletivo",
    "cafe",
+   "credencial",
    "escalda_pes",
    "estac_bike",
    "estacionamento",
@@ -2751,6 +2763,7 @@ const BASE=[
    "banheiro_privativo",
    "cafe",
    "cartao",
+   "credencial",
    "estac_bike",
    "estacionamento",
    "frigobar",
@@ -4042,6 +4055,7 @@ const BASE=[
   "comodidades": [
    "cafe",
    "cartao",
+   "credencial",
    "estac_bike",
    "estacionamento",
    "refeicoes",
@@ -4361,6 +4375,7 @@ const BASE=[
    "banheiro_privativo",
    "cafe",
    "cartao",
+   "credencial",
    "estacionamento",
    "frigobar",
    "lavanderia",
@@ -4952,6 +4967,7 @@ const BASE=[
   "origem": "pdf_ed19",
   "comodidades": [
    "cafe",
+   "credencial",
    "refeicoes"
   ],
   "tipo_acomodacao": ""
@@ -6558,6 +6574,7 @@ const BASE=[
    "banheiro_privativo",
    "cafe",
    "cartao",
+   "credencial",
    "estac_bike",
    "estacionamento",
    "frigobar",
@@ -7834,6 +7851,7 @@ const BASE=[
    "banheiro_privativo",
    "cafe",
    "cartao",
+   "credencial",
    "escalda_pes",
    "estac_bike",
    "estacionamento",
@@ -8709,6 +8727,7 @@ const BASE=[
    "cafe",
    "carregador",
    "cartao",
+   "credencial",
    "estac_bike",
    "estacionamento",
    "lavanderia",
@@ -8978,6 +8997,7 @@ const BASE=[
    "cafe",
    "carregador",
    "cartao",
+   "credencial",
    "estac_bike",
    "estacionamento",
    "lavanderia",
@@ -9263,6 +9283,7 @@ const BASE=[
   "origem": "pdf_ed19",
   "comodidades": [
    "cafe",
+   "credencial",
    "refeicoes",
    "wifi"
   ],
@@ -10213,6 +10234,7 @@ const BASE=[
    "ar_condicionado",
    "cafe",
    "cartao",
+   "credencial",
    "escalda_pes",
    "estac_bike",
    "estacionamento",
@@ -10707,6 +10729,7 @@ const BASE=[
    "banheiro_privativo",
    "cafe",
    "cartao",
+   "credencial",
    "escalda_pes",
    "estac_bike",
    "frigobar",
@@ -11109,6 +11132,7 @@ const BASE=[
    "cafe",
    "carregador",
    "cartao",
+   "credencial",
    "escalda_pes",
    "estac_bike",
    "estacionamento",
@@ -11321,6 +11345,7 @@ const BASE=[
    "banheiro_privativo",
    "cafe",
    "cartao",
+   "credencial",
    "escalda_pes",
    "estac_bike",
    "estacionamento",
@@ -12115,8 +12140,8 @@ const BASE=[
   "site": "www.pousadalanaroca.com.br",
   "instagram": "",
   "endereco": "Av. Egidio Dias de Carvalho, 1336, Bairro Goiabal / 4 km do Centro da cidade",
-  "observacoes": "CREDENCIAL TPL/ WCCL",
-  "credencial": false,
+  "observacoes": "TPL/ WCCL",
+  "credencial": true,
   "pagina_pdf": 30,
   "revisar": [],
   "origem": "pdf_ed19",
@@ -12124,6 +12149,7 @@ const BASE=[
    "banheiro_coletivo",
    "cafe",
    "camping",
+   "credencial",
    "escalda_pes",
    "estac_bike",
    "estacionamento",
@@ -12170,6 +12196,7 @@ const BASE=[
   "comodidades": [
    "banheiro_privativo",
    "cafe",
+   "credencial",
    "escalda_pes",
    "estac_bike",
    "estacionamento",
@@ -18874,13 +18901,13 @@ const RAMAIS=[{id:'aguai',n:12,nome:'Aguaí',url:'https://caminhodafe.com.br/ptb
 {id:'santa-rita',n:16,nome:'Santa Rita de Cássia',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-16-Ramal-Santa-Rita-de-Cassia-Santa-Rita-de-Caldas-Edicao-19.0.pdf',nota:'Santa Rita de Caldas · Ouro Fino'},
 {id:'sao-jose',n:1,nome:'São José',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-01-Ramal-Sao-Jose-Edicao-19.0-1.pdf',nota:''},
 {id:'tambau',n:8,nome:'Tambaú',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-08-Ramal-Tambau-Edicao-19.0.pdf',nota:''}];
-const APP_VERSAO='1.0.0',APP_DATA='13/10/2026';
+const APP_VERSAO='1.2.0',APP_DATA='14/10/2026';
 const MULTI_RAMAL=false; /* escolha de ramais escondida por enquanto; mude para true para reativar */
 const SITE='https://caminhodafe.com.br/ptbr/pousadas/';
 
 const FORMAS=['Dinheiro','Pix','Cartão de débito','Cartão de crédito','Outro'];
 const CAT_ALIM=['Café da manhã','Almoço','Jantar','Lanches','Água e bebidas','Mercado','Outros alimentos'];
-const CAT_OUT=['Transporte','Passagens','Combustível','Lavanderia','Farmácia','Equipamentos','Roupas e calçados','Manutenção de equipamentos','Taxas','Seguro','Telefonia e internet','Imprevistos','Outros'];
+const CAT_OUT=['Transporte','Passagens','Combustível','Lavanderia','Farmácia','Lembrança','Vestuário','Doação','Equipamentos','Manutenção de equipamentos','Taxas','Seguro','Telefonia e internet','Imprevistos','Outros'];
 const ST_RES=['planejada','aguardando confirmação','confirmada','cancelada'];
 const DISP=[['desconhecida','Não verificada'],['disponivel','Disponível (confirmei)'],['lotada','Sem vaga (confirmei)'],['sem-resposta','Sem resposta']];
 let storageOK=true;
@@ -18888,14 +18915,18 @@ const modoMarco=()=>S.cfg.modoKm!=='percorrido';const toAcc=(v)=>modoMarco()?Cor
 const kmTxt=(x)=>String(Math.round(x*10)/10).replace('.',',');
 const esc=(s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const today=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate());};
-function fresh(){return{v:1,cfg:{inicio:isoDate(today()),kmInicial:0,media:20,total:317,orcamento:'',orcAlim:'',moeda:'BRL',descanso:0,ramal:'todos',grande:false,contraste:false,modoKm:'marco',tema:'auto',proxy:''},
+function fresh(){return{v:1,cfg:{inicio:isoDate(today()),kmInicial:0,media:20,total:317,orcamento:'',orcAlim:'',moeda:'BRL',descanso:0,ramal:'todos',grande:false,contraste:false,modoKm:'marco',tema:'auto',proxy:'',credTopo:false},
   kmHist:[],hosp:[],ramalId:null,baseInfo:null,hospStore:{},ref:317,dicaInstalar:false,reservas:[],pagamentos:[],alimentacao:[],outros:[],cats:[],tab:'inicio'};}
 function load(){try{const t=localStorage.getItem(LS);if(t){const s=JSON.parse(t);const f=fresh();const o={...f,...s,cfg:{...f.cfg,...s.cfg}};
   if(!o.ramalId&&o.hosp&&o.hosp.length){o.ramalId='aguas-da-prata';o.baseInfo=o.baseInfo||{edicao:'19.0',atualizado:'30/09/2026',importadoEm:null,fonte:'embutida no app'};}
+  (o.outros||[]).forEach(x=>{if(x.categoria==='Roupas e calçados')x.categoria='Vestuário';});o.cats=(o.cats||[]).filter(c=>!CAT_OUT.some(d=>Core.norm(d)===Core.norm(c)));
+  (o.hosp||[]).forEach(h=>{if(h.credencial&&!(h.comodidades||[]).includes('credencial'))h.comodidades=[...(h.comodidades||[]),'credencial'];});
   Core.setRef(o.ref||317);return o;}}catch(e){storageOK=false;}return fresh();}
 let S=load();
 function save(){try{localStorage.setItem(LS,JSON.stringify(S));storageOK=true;}catch(e){storageOK=false;toast('Não foi possível salvar neste navegador. Faça um backup em Configurações.',1);}}
 const ICON={inicio:'<path d="M3 11 12 3l9 8M5 10v10h5v-6h4v6h5V10"/>',pousadas:'<path d="M3 18V8m0 6h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="1.6"/>',reservas:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4m6-4v4m-6 8 2 2 4-4"/>',comida:'<path d="M7 3v8m-3-8v5a3 3 0 0 0 6 0V3M7 11v10M17 3c-2 2-3 5-3 8h3v10"/>',custos:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 15h2"/>',relatorios:'<path d="M6 3h8l5 5v13H6zM14 3v5h5M9 13h7M9 17h7"/>',config:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M19 5l-2 2M7 17l-2 2"/>'};
+const NAV=[['inicio','Início','inicio',['inicio'],'Início — minha caminhada'],['hosp','Hospedagem','pousadas',['pousadas','reservas'],'Pousadas e hospedagens agendadas'],['gastos','Gastos','custos',['comida','custos'],'Alimentação e demais custos'],['relatorios','Relatório','relatorios',['relatorios'],'Relatórios'],['config','Ajustes','config',['config'],'Configurações']];
+const SEGS={hosp:[['pousadas','Pousadas e hotéis'],['reservas','Agendadas']],gastos:[['comida','Alimentação'],['custos','Demais custos']]};
 const TABS=[['inicio','Início','Início — minha caminhada'],['pousadas','Pousadas','Pousadas e hotéis'],['reservas','Reservas','Hospedagens agendadas'],['comida','Comida','Alimentação'],['custos','Custos','Demais custos'],['relatorios','Relatório','Relatórios'],['config','Ajustes','Configurações']];
 function toast(m,bad){const t=document.createElement('div');t.className='toast'+(bad?' bad':'');t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),bad?5200:2800);}
 const $=(s)=>document.querySelector(s);
@@ -18925,7 +18956,7 @@ function badges(h){let b='';if(h.credencial)b+='<span class="badge g">carimbo de
 function amFilter(act,sel){const cnt={};S.hosp.forEach(h=>(h.comodidades||[]).forEach(k=>cnt[k]=(cnt[k]||0)+1));
   return `<label class="f">O que oferece (marque o que precisa)</label>${Core.AMEN_GRUPOS.map(([g,ks])=>{const vis=ks.filter(k=>cnt[k]);return vis.length?`<div class="small" style="margin:6px 0 2px">${g}</div><div class="chips" style="flex-wrap:wrap;overflow:visible">${vis.map(k=>`<button type="button" class="chip ${sel.includes(k)?'on':''}" data-a="${act}" data-k="${k}">${Core.AMEN[k]}</button>`).join('')}</div>`:'';}).join('')}${sel.length?`<button type="button" class="btn sm alt" data-a="${act}clr">Limpar comodidades</button>`:''}<p class="small">Lido dos ícones e das siglas da planilha, pode haver erros. Ausência de ícone não garante que a hospedagem não ofereça. Confirme com o estabelecimento.</p>`;}
 const AM_CARD=['wifi','cafe','refeicoes','lavanderia','ar_condicionado','estacionamento','piscina','estac_bike','translado','carregador'];
-function amChips(h){const a=h.comodidades||[];if(!a.length)return'';const sel=[...F.am,...FL.am];const ord=[...a.filter(k=>sel.includes(k)),...AM_CARD.filter(k=>a.includes(k)&&!sel.includes(k)),...a.filter(k=>!AM_CARD.includes(k)&&!sel.includes(k))];
+function amChips(h){const a=(h.comodidades||[]).filter(k=>k!=='credencial');if(!a.length)return'';const sel=[...F.am,...FL.am];const ord=[...a.filter(k=>sel.includes(k)),...AM_CARD.filter(k=>a.includes(k)&&!sel.includes(k)),...a.filter(k=>!AM_CARD.includes(k)&&!sel.includes(k))];
   return `<div>${ord.slice(0,6).map(k=>`<span class="badge g">${Core.AMEN[k]}</span>`).join('')}${a.length>6?`<span class="badge">+${a.length-6}</span>`:''}</div>`;}
 function amDetalhe(h){const a=h.comodidades||[];const g=Core.AMEN_GRUPOS.map(([n,ks])=>{const v=ks.filter(k=>a.includes(k));return v.length?`<div class="small" style="margin-top:6px"><b>${n}:</b> ${v.map(k=>Core.AMEN[k]).join(' · ')}</div>`:'';}).join('');
   return `<h3 style="margin-top:12px">O que oferece</h3>${h.tipo_acomodacao?`<div class="small">Classificação na planilha: ${esc(h.tipo_acomodacao)}</div>`:''}${g||'<div class="small">Nenhuma comodidade identificada na planilha.</div>'}<div class="small" style="margin-top:6px">Lido dos ícones e siglas da planilha da associação; confirme com a hospedagem.</div>`;}
@@ -18943,14 +18974,20 @@ function render(){document.documentElement.classList.toggle('big',!!S.cfg.grande
   $('#sub').textContent=ramalInfo()?'Ramal '+ramalInfo().nome+' → Aparecida':'Escolha seu ramal';
   $('#sub').textContent=ramalInfo()?'Ramal '+ramalInfo().nome:'Escolha seu ramal';
   if(!S.ramalId){$('#nav').style.display='none';$('#main').innerHTML=vOnboarding();return;}$('#nav').style.display='';
-  $('#nav').innerHTML=TABS.map(t=>`<button data-a="tab" data-t="${t[0]}" class="${S.tab===t[0]?'on':''}" aria-label="${t[2]}"><svg viewBox="0 0 24 24">${ICON[t[0]==='inicio'?'inicio':t[0]]}</svg>${t[1]}</button>`).join('');
+  $('#nav').innerHTML=NAV.map(n=>{const act=n[3].includes(S.tab);const tgt=act?S.tab:((S.sub&&n[3].includes(S.sub[n[0]]))?S.sub[n[0]]:n[3][0]);return `<button data-a="tab" data-t="${tgt}" class="${act?'on':''}" aria-label="${n[4]}"><svg viewBox="0 0 24 24">${ICON[n[2]]}</svg>${n[1]}</button>`;}).join('');
+  const gk=Object.keys(SEGS).find(g=>SEGS[g].some(x=>x[0]===S.tab));const seg=gk?`<div class="seg">${SEGS[gk].map(([t,l])=>`<button type="button" data-a="tab" data-t="${t}" class="${S.tab===t?'on':''}">${l}</button>`).join('')}</div>`:'';
   const fn={inicio:vInicio,pousadas:vPousadas,reservas:vReservas,comida:()=>vGastos('comida'),custos:()=>vGastos('custos'),relatorios:vRelatorios,config:vConfig}[S.tab];
-  $('#main').innerHTML=(storageOK?'':'<div class="warnbox">Armazenamento do navegador indisponível: seus dados não serão mantidos. Use Configurações → Backup.</div>')+fn();}
-function go(t){MV=null;S.tab=t;save();render();window.scrollTo(0,0);}
+  $('#main').innerHTML=(storageOK?'':'<div class="warnbox">Armazenamento do navegador indisponível: seus dados não serão mantidos. Use Configurações → Backup.</div>')+seg+fn();}
+let smoothId=0;
+function smoothTop(){const y0=window.scrollY;if(y0<2)return;if(matchMedia('(prefers-reduced-motion: reduce)').matches){window.scrollTo(0,0);return;}cancelAnimationFrame(smoothId);const dur=Math.min(670,Math.max(300,Math.sqrt(y0)*17.4)),t0=performance.now();const ease=(t)=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+  const step=(now)=>{const k=Math.min(1,(now-t0)/dur);window.scrollTo(0,y0*(1-ease(k)));if(k<1)smoothId=requestAnimationFrame(step);};smoothId=requestAnimationFrame(step);}
+['touchstart','wheel','keydown'].forEach(ev=>window.addEventListener(ev,()=>cancelAnimationFrame(smoothId),{passive:true}));
+function go(t){MV=null;S.tab=t;S.sub=S.sub||{};NAV.forEach(n=>{if(n[3].length>1&&n[3].includes(t))S.sub[n[0]]=t;});save();render();window.scrollTo(0,0);}
+const credTopo=(arr,get)=>S.cfg.credTopo?[...arr.filter(get),...arr.filter(x=>!get(x))]:arr;
 /* --- Início --- */
 function vInicio(){const at=pos(),f=Core.finance(S,hoje()),tot=Number(S.cfg.total)||0,ki=Number(S.cfg.kmInicial)||0,media=Number(S.cfg.media)||0;
   const perc=Math.max(0,at-ki);const pct=tot>ki?Math.min(100,perc/(tot-ki)*100):null;const ini=parseISO(S.cfg.inicio);
-  const lista=Core.proximas(S,hoje(),{tipo:F.tipo,max:F.max,municipio:F.municipio,categoria:F.categoria,precoMax:F.precoMax,disp:F.disp,q:F.q,am:F.am,ramal:S.cfg.ramal});
+  const lista=credTopo(Core.proximas(S,hoje(),{tipo:F.tipo,max:F.max,municipio:F.municipio,categoria:F.categoria,precoMax:F.precoMax,disp:F.disp,q:F.q,am:F.am,ramal:S.cfg.ramal}),x=>x.h.credencial);
   const next=Core.proximas(S,hoje(),{tipo:'hospedagem',ramal:S.cfg.ramal}).find(x=>x.dist>0.05)||Core.proximas(S,hoje(),{tipo:'hospedagem',ramal:S.cfg.ramal})[0];
   const reservasAtivas=S.reservas.filter(r=>r.status!=='cancelada');const conf=reservasAtivas.filter(r=>r.status==='confirmada').length;
   const munis=[...new Set(S.hosp.map(h=>h.municipio).filter(Boolean))];const cats=[...new Set(S.hosp.filter(h=>F.tipo==='todos'||h.tipo===F.tipo).map(h=>h.categoria))];
@@ -18973,7 +19010,7 @@ function vInicio(){const at=pos(),f=Core.finance(S,hoje()),tot=Number(S.cfg.tota
   if(S.kmHist.length)h+=`<details class="card" style="margin-top:12px"><summary>Histórico de quilometragem (${S.kmHist.length})</summary>${[...S.kmHist].reverse().slice(0,12).map(k=>`<div class="item"><span>${brDateTime(k.quando)}</span><span><b>marco ${num(marco(k.km),1)}</b> · ${num(k.km,1)} km andados <button class="btn sm danger" data-a="delkm" data-id="${k.id}" aria-label="Excluir registro">Excluir</button></span></div>`).join('')}</details>`;
   h+=vMapa();
   h+=`<h2>Próximas hospedagens</h2><div class="warnbox">Distâncias calculadas pelos marcos quilométricos do PDF (${baseVer()}) a partir de Águas da Prata. Não são a distância exata por trilha ou estrada até a porta. Datas são <b>previsões</b>. Disponibilidade e preços precisam ser confirmados com a hospedagem.</div>
-  <div class="chips">${[[0,'Todas'],[10,'até 10 km'],[20,'até 20 km'],[30,'até 30 km'],[50,'até 50 km']].map(c=>`<button class="chip ${F.max===c[0]?'on':''}" data-a="fmax" data-v="${c[0]}">${c[1]}</button>`).join('')}</div>
+  <div class="chips">${[[0,'Todas'],[10,'até 10 km'],[20,'até 20 km'],[30,'até 30 km']].map(c=>`<button class="chip ${F.max===c[0]?'on':''}" data-a="fmax" data-v="${c[0]}">${c[1]}</button>`).join('')}</div>
   <details class="card" ${(F.q||F.municipio||F.categoria||F.precoMax||F.disp!=='todas'||F.tipo!=='hospedagem'||F.am.length)?'open':''}><summary>Mais filtros</summary><div class="row2"><div><label class="f">Município</label><select data-a="fsel" data-k="municipio"><option value="">Todos</option>${munis.map(m=>`<option ${F.municipio===m?'selected':''}>${esc(m)}</option>`).join('')}</select></div>
   <div><label class="f">Tipo</label><select data-a="fsel" data-k="categoria"><option value="">Todos</option>${cats.map(m=>`<option ${F.categoria===m?'selected':''}>${esc(m)}</option>`).join('')}</select></div>
   <div><label class="f">Diária até</label><select data-a="fsel" data-k="precoMax"><option value="0">Qualquer</option>${[80,100,130,150,200].map(v=>`<option value="${v}" ${F.precoMax===v?'selected':''}>R$ ${v}</option>`).join('')}</select></div>
@@ -18986,7 +19023,7 @@ function vInicio(){const at=pos(),f=Core.finance(S,hoje()),tot=Number(S.cfg.tota
 /* --- Pousadas --- */
 function vPousadas(){const at=pos();const rev=S.hosp.filter(h=>h.revisar&&h.revisar.length).length;
   let l=S.hosp.filter(h=>(FL.tipo==='todos'||h.tipo===FL.tipo)&&(!FL.municipio||h.municipio===FL.municipio)&&(!FL.categoria||h.categoria===FL.categoria)&&(!FL.revisar||(h.revisar&&h.revisar.length))&&Core.temComodidades(h,FL.am)&&(!FL.q||Core.norm(h.nome+' '+h.municipio).includes(Core.norm(FL.q))));
-  l.sort((a,b)=>(a.km_inicio??1e9)-(b.km_inicio??1e9));
+  l.sort((a,b)=>(a.km_inicio??1e9)-(b.km_inicio??1e9));l=credTopo(l,x=>x.credencial);
   const munis=[...new Set(S.hosp.map(h=>h.municipio).filter(Boolean))];const cats=[...new Set(S.hosp.map(h=>h.categoria))];
   const nh=S.hosp.filter(h=>h.tipo==='hospedagem').length,na=S.hosp.length-nh;
   let h=`<h2 style="margin-top:6px">Pousadas e hotéis</h2><div class="card"><b>Ramal ${esc((ramalInfo()||{}).nome||'')}</b><div class="sub">Lista oficial da Associação dos Amigos do Caminho da Fé · <b>${baseVer()}</b>${S.baseInfo&&S.baseInfo.importadoEm?' · carregada em '+brDate(S.baseInfo.importadoEm.slice(0,10)):''}</div>
@@ -19054,7 +19091,7 @@ function vConfig(){const c=S.cfg,f=Core.finance(S,hoje());const ini=parseISO(c.i
   <label class="f">Moeda</label><select name="moeda"><option value="BRL">Real brasileiro (BRL)</option></select>
   <label class="f">Ramal de finalização a mostrar (Campos do Jordão em diante)</label><select name="ramal"><option value="todos" ${c.ramal==='todos'?'selected':''}>Todos</option><option value="P" ${c.ramal==='P'?'selected':''}>Pindamonhangaba (P)</option><option value="G" ${c.ramal==='G'?'selected':''}>Guaratinguetá (G)</option></select>
   <div class="row2"><div><label class="f">Aparência</label><select name="tema"><option value="auto" ${c.tema==='auto'?'selected':''}>Automática</option><option value="claro" ${c.tema==='claro'?'selected':''}>Clara</option><option value="escuro" ${c.tema==='escuro'?'selected':''}>Noturna</option></select></div><div><label class="f">Quilometragem que eu digito</label><select name="modoKm"><option value="marco" ${c.modoKm!=='percorrido'?'selected':''}>Marco da placa</option><option value="percorrido" ${c.modoKm==='percorrido'?'selected':''}>Km andados</option></select></div></div>
-  <label class="f"><input type="checkbox" name="grande" ${c.grande?'checked':''} style="width:auto;min-height:0"> Letras maiores</label><label class="f"><input type="checkbox" name="contraste" ${c.contraste?'checked':''} style="width:auto;min-height:0"> Alto contraste (uso ao ar livre)</label>
+  <label class="f"><input type="checkbox" name="grande" ${c.grande?'checked':''} style="width:auto;min-height:0"> Letras maiores</label><label class="f"><input type="checkbox" name="contraste" ${c.contraste?'checked':''} style="width:auto;min-height:0"> Alto contraste (uso ao ar livre)</label><label class="f"><input type="checkbox" name="credTopo" ${c.credTopo?'checked':''} style="width:auto;min-height:0"> Mostrar no topo das listas as acomodações e restaurantes/lanchonetes com carimbo da credencial</label>
   <div class="stat" style="margin:12px 0"><span>Data estimada de conclusão (calculada)</span><b>${fim?brDate(fim):'informe início, média e distância total'}</b></div><div id="cfgErr"></div><button class="btn" style="width:100%">Salvar configurações</button></form>
   <div class="card"><h3>Backup e restauração</h3><p class="small">Seus dados ficam só neste aparelho. Faça backup com frequência e antes de limpar o navegador.</p><div class="actions"><button class="btn" data-a="bkout">Exportar backup (JSON)</button><button class="btn alt" data-a="bkin">Restaurar backup</button><button class="btn out" data-a="bkcopy">Copiar backup (texto)</button><button class="btn out" data-a="bkpaste">Restaurar de texto</button></div></div>
   <div class="card"><h3>Atalho na tela inicial</h3>${isStandalone()?'<p class="small">O app já está instalado neste aparelho.</p>':'<p class="small">Adicione à tela inicial para abrir como um aplicativo, em tela cheia.</p><button class="btn" data-a="instalar">Adicionar à tela inicial</button>'}</div>
@@ -19167,7 +19204,7 @@ function aplicarPlano(){if(!PEND)return;const {r,pl}=PEND;const keep=['id','disp
   const antigo=S.ref;S.ref=r.meta.ref;Core.setRef(S.ref);if(!Number(S.cfg.total)||Number(S.cfg.total)===antigo)S.cfg.total=S.ref;
   S.baseInfo={edicao:r.meta.edicao,atualizado:r.meta.atualizado,importadoEm:new Date().toISOString(),fonte:'PDF'};PEND=null;save();closeDlg();render();toast(`Lista atualizada: ${pl.novos.length} novos, ${pl.atualizados.length} alterados`);}
 /* ---------- alimentação: onde comer ---------- */
-function vOndeComer(){const at=pos();const lista=Core.proximas(S,hoje(),{tipo:'todos',ramal:S.cfg.ramal,max:FF.max}).map(x=>({...x,fk:Core.foodKind(x.h)})).filter(x=>x.fk&&(FF.kind==='todos'||x.fk===FF.kind));
+function vOndeComer(){const at=pos();const lista=credTopo(Core.proximas(S,hoje(),{tipo:'todos',ramal:S.cfg.ramal,max:FF.max}).map(x=>({...x,fk:Core.foodKind(x.h)})).filter(x=>x.fk&&(FF.kind==='todos'||x.fk===FF.kind)),x=>x.h.credencial);
   const kinds=[['todos','Todos'],['restaurante','Restaurantes'],['lanche','Lanches e padarias'],['mercado','Mercados'],['hospedagem','Na hospedagem']];
   const lbl={restaurante:'Restaurante / refeição',lanche:'Lanche, padaria ou café',mercado:'Mercado',hospedagem:'Refeição na hospedagem'};
   let h=`<div class="card"><h3>Onde comer à frente</h3><div class="sub">A partir da placa ${num(Math.max(Core.REF-at,0),1)} (km ${num(at,1)} andados). Horários e cardápios não constam na lista: confirme por telefone.</div>
@@ -19250,7 +19287,7 @@ async function download(bytes,name,type){const b=new Blob([bytes],{type});let d=
 /* ---------- ações ---------- */
 document.addEventListener('click',async(e)=>{const el=e.target.closest('[data-a]');if(!el||el.tagName==='SELECT'||(el.tagName==='INPUT'&&el.type!=='checkbox'))return;const a=el.dataset.a,id=el.dataset.id;
   switch(a){
-  case'tab':go(el.dataset.t);break;
+  case'tab':if(S.tab===el.dataset.t)smoothTop();else go(el.dataset.t);break;
   case'fam':{const k=el.dataset.k;F.am=F.am.includes(k)?F.am.filter(x=>x!==k):[...F.am,k];F.n=15;render();break;}case'famclr':F.am=[];F.n=15;render();break;
   case'flam':{const k=el.dataset.k;FL.am=FL.am.includes(k)?FL.am.filter(x=>x!==k):[...FL.am,k];FL.n=40;render();break;}case'flamclr':FL.am=[];FL.n=40;render();break;
   case'mz':zoomMap(+el.dataset.v>0?1.5:1/1.5);break;case'mfull':MV={x:0,y:0,w:MAPW,h:MAPH};drawMap();break;case'mfocus':MV=null;drawMap();break;
@@ -19326,7 +19363,7 @@ document.addEventListener('submit',async(e)=>{e.preventDefault();const f=e.targe
     const E=(m)=>{$('#cfgErr').innerHTML=`<div class="err">${esc(m)}</div>`;};
     if(!parseISO(v('inicio')))return E('Informe uma data de início válida.');if(isNaN(km))return E('Km inicial inválido.');if(isNaN(media)||media<=0)return E('A média diária deve ser maior que zero.');if(isNaN(tot))return E('Distância total inválida.');if(tot&&tot<=km)return E('A distância total deve ser maior que o km inicial.');
     if(orc!==''&&isNaN(orc))return E('Orçamento total inválido.');if(oa!==''&&isNaN(oa))return E('Orçamento de alimentação inválido.');if(isNaN(ds)||ds<0)return E('Dias de descanso inválidos.');
-    Object.assign(S.cfg,{inicio:v('inicio'),kmInicial:km,media,total:tot,orcamento:orc,orcAlim:oa,descanso:ds,ramal:v('ramal'),proxy:v('proxy'),tema:v('tema'),modoKm:v('modoKm'),grande:f.grande.checked,contraste:f.contraste.checked});save();render();toast('Configurações salvas');return;}
+    Object.assign(S.cfg,{inicio:v('inicio'),kmInicial:km,media,total:tot,orcamento:orc,orcAlim:oa,descanso:ds,ramal:v('ramal'),proxy:v('proxy'),tema:v('tema'),modoKm:v('modoKm'),grande:f.grande.checked,contraste:f.contraste.checked,credTopo:f.credTopo.checked});save();render();toast('Configurações salvas');return;}
   if(f.id==='fH'){const nome=v('nome');if(!nome)return err('Informe o nome.');const km=v('km_inicio')?parseKm(v('km_inicio')):null;if(km!==null&&isNaN(km))return err('Quilometragem inválida (use número maior ou igual a zero).');
     const kp=v('km_pdf')?parseKm(v('km_pdf')):null;if(kp!==null&&isNaN(kp))return err('Km original inválido.');const pmin=v('preco_min')?parseMoney(v('preco_min')):null,pmax=v('preco_max')?parseMoney(v('preco_max')):null;if((pmin!==null&&isNaN(pmin))||(pmax!==null&&isNaN(pmax)))return err('Valor de diária inválido.');if(pmin!==null&&pmax!==null&&pmax<pmin)return err('A diária máxima não pode ser menor que a mínima.');
     const tel=v('telefones').split('|').map(s=>s.trim()).filter(Boolean).map(s=>({numero:s.replace('*','').trim(),whatsapp:s.includes('*')}));
