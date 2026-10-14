@@ -18901,7 +18901,7 @@ const RAMAIS=[{id:'aguai',n:12,nome:'Aguaí',url:'https://caminhodafe.com.br/ptb
 {id:'santa-rita',n:16,nome:'Santa Rita de Cássia',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-16-Ramal-Santa-Rita-de-Cassia-Santa-Rita-de-Caldas-Edicao-19.0.pdf',nota:'Santa Rita de Caldas · Ouro Fino'},
 {id:'sao-jose',n:1,nome:'São José',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-01-Ramal-Sao-Jose-Edicao-19.0-1.pdf',nota:''},
 {id:'tambau',n:8,nome:'Tambaú',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-08-Ramal-Tambau-Edicao-19.0.pdf',nota:''}];
-const APP_VERSAO='1.2.0',APP_DATA='14/10/2026';
+const APP_VERSAO='1.2.1',APP_DATA='14/10/2026';
 const MULTI_RAMAL=false; /* escolha de ramais escondida por enquanto; mude para true para reativar */
 const SITE='https://caminhodafe.com.br/ptbr/pousadas/';
 
@@ -19311,7 +19311,7 @@ document.addEventListener('click',async(e)=>{const el=e.target.closest('[data-a]
   case'bkrun':{try{await restoreFrom(JSON.parse($('#bkTxt').value));}catch(err){toast('Texto inválido: '+err.message,1);}break;}case'closeDlg':closeDlg();break;
   case'savekm':{const v=parseKm($('#kmIn').value);if(isNaN(v)){toast('Informe um número válido (maior ou igual a zero).',1);return;}
     if(modoMarco()&&v>Core.REF){toast(`O marco não pode passar de ${Core.REF} (Águas da Prata).`,1);return;}
-    const acc=toAcc(v);const tot=Number(S.cfg.total)||0;if(tot&&acc>tot&&!await ask(`${num(acc,1)} km andados é maior que o total do percurso (${num(tot,1)} km). Salvar mesmo assim?`))return;
+    const acc=toAcc(v);if(S.kmHist.length&&Math.abs(acc-pos())<1e-6){toast('Sua posição já está nessa placa.');return;}const tot=Number(S.cfg.total)||0;if(tot&&acc>tot&&!await ask(`${num(acc,1)} km andados é maior que o total do percurso (${num(tot,1)} km). Salvar mesmo assim?`))return;
     MV=null;S.kmHist.push({id:Core.uid('k'),km:acc,quando:new Date().toISOString()});save();render();toast(`Posição atualizada: placa ${num(marco(acc),1)} · ${num(acc,1)} km andados`);break;}
   case'delkm':if(await ask('Excluir este registro de quilometragem? A posição volta ao registro anterior.')){S.kmHist=S.kmHist.filter(k=>k.id!==id);save();render();}break;
   case'fmax':F.max=+el.dataset.v;F.n=15;render();break;case'more':F.n+=15;render();break;case'morel':FL.n+=40;render();break;
@@ -19349,6 +19349,8 @@ document.addEventListener('change',(e)=>{const el=e.target;const a=el.dataset&&e
   else if(a==='notas'){const h=S.hosp.find(x=>x.id===el.dataset.id);h.notas=el.value;save();}
   else if(el.id==='rHosp'){const h=S.hosp.find(x=>x.id===el.value);if(h){const f=$('#fR');f.nome.value=h.nome;f.municipio.value=h.municipio||'';f.endereco.value=h.endereco||'';f.telefone.value=fone(h)[0]?.numero||'';if(h.preco_min!=null)f.valorDiaria.value=String(h.preco_min).replace('.',',');recalcRes();}}
   else if(el.id==='fileIn')importFile(el);});
+document.addEventListener('focusin',(e)=>{const el=e.target;if(el.id!=='kmIn')return;el.dataset.old=el.value;if(el.value){el.placeholder=el.value;el.value='';}});
+document.addEventListener('focusout',(e)=>{const el=e.target;if(el.id!=='kmIn')return;if(!el.value&&el.dataset.old)el.value=el.dataset.old;});
 let tq;document.addEventListener('input',(e)=>{const el=e.target;if(el.dataset&&el.dataset.a==='fq'){F.q=el.value;F.n=15;clearTimeout(tq);tq=setTimeout(()=>{render();const i=document.querySelector('[data-a=fq]');if(i){i.focus();i.setSelectionRange(99,99);}},350);}
   if(el.dataset&&el.dataset.a==='flq'){FL.q=el.value;FL.n=40;clearTimeout(tq);tq=setTimeout(()=>{render();const i=document.querySelector('[data-a=flq]');if(i){i.focus();i.setSelectionRange(99,99);}},350);}
   if(el.closest&&el.closest('#fR'))recalcRes();});
