@@ -18,6 +18,7 @@ svg.mapa{width:100%;height:auto;display:block}svg.mapa .cn{stroke:var(--ink);str
 svg.mapa text{font:600 10px system-ui,sans-serif;fill:var(--ink)}svg.mapa .mu{fill:var(--mute);font-weight:500}
 #mapsvgbox{touch-action:none;cursor:grab;border-radius:12px;overflow:hidden;background:var(--sand)}#mapsvgbox:active{cursor:grabbing}.mapbox{position:relative}.mapctl{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.mapctl button{min-width:48px;min-height:40px;border-radius:10px;border:1.5px solid var(--moss-d);background:var(--card);color:var(--moss-d);font:600 .82rem system-ui,sans-serif;cursor:pointer;padding:0 11px}
 .seg{display:flex;background:var(--sand);border-radius:12px;padding:4px;gap:4px;margin:0 0 12px}.seg button{flex:1;border:0;background:none;border-radius:9px;min-height:42px;font:600 .92rem system-ui,sans-serif;color:var(--moss-d);cursor:pointer}.seg button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.22)}
+.badge.fav{background:var(--note);color:var(--notet);border:1px solid var(--noteb)}
 body.hc{--mute:#3d3d30;--line:#9d927a;--paper:#fff}
 h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;margin:0;color:var(--moss-d)}
 h2{font-size:1.35rem;margin:22px 0 10px}h3{font-size:1.05rem;margin:0 0 6px}
@@ -155,6 +156,8 @@ function mapsLink(h){const q=[h.nome,h.endereco,h.municipio].filter(Boolean).joi
 function diarias(ent,sai){const a=parseISO(ent),b=parseISO(sai);if(!a||!b)return NaN;const n=diffDays(a,b);return n>0?n:NaN;}
 function totalReserva(r){const n=R(r.diarias);return round2(n*R(r.valorDiaria)+R(r.taxas));}
 function pagoReserva(st,rid){return round2((st.pagamentos||[]).filter(p=>p.reservaId===rid).reduce((s,p)=>s+R(p.valor),0));}
+/* pagamento em duas partes: 50% adiantado + 50% na data de entrada */
+function planoMetade(r,pago){const t=totalReserva(r),m=round2(t/2),p=R(pago);return{metade:m,segunda:round2(t-m),adiantPendente:Math.max(0,round2(m-p)),segundaPendente:p<m?round2(t-m):Math.max(0,round2(t-p))};}
 function pendenteReserva(st,r){return Math.max(0,round2(totalReserva(r)-pagoReserva(st,r.id)));}
 function statusPag(st,r){const t=totalReserva(r),p=pagoReserva(st,r.id);if(p<=0)return'não pago';return p+0.004>=t?'pago':'parcialmente pago';}
 function finance(st,hoje){const res=(st.reservas||[]).filter(r=>r.status!=='cancelada');
@@ -329,7 +332,7 @@ function relatorio(st,{inicio=null,fim=null,hoje=new Date(),hospNome=(r)=>r.nome
   const rs=[...sub.reservas].sort((a,b)=>(a.entrada||'').localeCompare(b.entrada||''));
   if(!rs.length)pdf.para('Nenhuma hospedagem agendada no período.');else
   pdf.table([{h:'Hospedagem / município',w:4},{h:'Entrada',w:1.5},{h:'Saída',w:1.5},{h:'Diár.',w:0.9,a:'r'},{h:'Total',w:1.6,a:'r'},{h:'Pago',w:1.6,a:'r'},{h:'Pendente',w:1.6,a:'r'},{h:'Status',w:2.2}],
-    rs.map(r=>[hospNome(r)+(r.municipio?' — '+r.municipio:''),brDate(r.entrada),brDate(r.saida),String(r.diarias||''),brl(totalReserva(r)),brl(pagoReserva(sub,r.id)),brl(pendenteReserva(sub,r)),r.status+' / '+statusPag(sub,r)]),
+    rs.map(r=>[hospNome(r)+(r.municipio?' — '+r.municipio:''),brDate(r.entrada),brDate(r.saida),String(r.diarias||''),brl(totalReserva(r)),brl(pagoReserva(sub,r.id)),brl(pendenteReserva(sub,r)),r.status+' / '+statusPag(sub,r)+(r.pgto==='metade'?' / 50%+50%':'')]),
     {foot:['Totais (exceto canceladas)','','','',brl(f.hospPrev),brl(f.hospPago),brl(f.hospPend),'']});
   if(rs.length){pdf.h2('Pagamentos registrados');const ps=sub.pagamentos.sort((a,b)=>(a.data||'').localeCompare(b.data||''));
     if(ps.length)pdf.table([{h:'Data',w:1.5},{h:'Reserva',w:4},{h:'Forma',w:2},{h:'Valor',w:1.8,a:'r'}],ps.map(p=>{const r=rs.find(x=>x.id===p.reservaId);return[brDate(p.data),r?hospNome(r):'—',p.forma||'—',brl(p.valor)];}));else pdf.para('Nenhum pagamento registrado.');}
@@ -355,7 +358,7 @@ function relatorio(st,{inicio=null,fim=null,hoje=new Date(),hospNome=(r)=>r.nome
   pdf.para('Este relatório foi gerado pelo aplicativo Meu Caminho da Fé a partir dos dados lançados manualmente. A quilometragem é informada pelo peregrino (sem GPS) e as datas de chegada são previsões, não reservas confirmadas. Preços e disponibilidades das hospedagens devem ser confirmados diretamente com cada estabelecimento.');
   if(f.orc!=null)pdf.para(`Orçamento total: ${brl(f.orc)}. Realizado: ${brl(f.real)}. Saldo: ${brl(f.saldo)}${f.saldo<0?' (orçamento ultrapassado)':''}.`,{bold:true});
   return pdf.build('Meu Caminho da Fé — Relatório Financeiro');}
-return{get REF(){return REF;},setRef,AMEN,AMEN_GRUPOS,temComodidades,TRILHA,ROTAS,TRAMO_G,kmToPoint,gpsToKm,foodKind,refeicaoTxt,marcoDe,round2,brl,num,pad,isoDate,parseISO,brDate,brDateTime,addDays,diffDays,parseMoney,parseKm,uid,kmAtual,distRestante,situacao,diasCaminhada,dataBase,dataChegada,proximas,norm,digits,foneInfo,waLink,mapsLink,
+return{get REF(){return REF;},setRef,planoMetade,AMEN,AMEN_GRUPOS,temComodidades,TRILHA,ROTAS,TRAMO_G,kmToPoint,gpsToKm,foodKind,refeicaoTxt,marcoDe,round2,brl,num,pad,isoDate,parseISO,brDate,brDateTime,addDays,diffDays,parseMoney,parseKm,uid,kmAtual,distRestante,situacao,diasCaminhada,dataBase,dataChegada,proximas,norm,digits,foneInfo,waLink,mapsLink,
  diarias,totalReserva,pagoReserva,pendenteReserva,statusPag,finance,porCategoria,porDia,porForma,toCSV,fromCSV,mesclarBase,CSV_COLS,relatorio,Pdf};
 })();
 if(false&&typeof module!=='undefined')module.exports=Core;
@@ -18905,7 +18908,7 @@ const RAMAIS=[{id:'aguai',n:12,nome:'Aguaí',url:'https://caminhodafe.com.br/ptb
 {id:'santa-rita',n:16,nome:'Santa Rita de Cássia',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-16-Ramal-Santa-Rita-de-Cassia-Santa-Rita-de-Caldas-Edicao-19.0.pdf',nota:'Santa Rita de Caldas · Ouro Fino'},
 {id:'sao-jose',n:1,nome:'São José',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-01-Ramal-Sao-Jose-Edicao-19.0-1.pdf',nota:''},
 {id:'tambau',n:8,nome:'Tambaú',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-08-Ramal-Tambau-Edicao-19.0.pdf',nota:''}];
-const APP_VERSAO='1.3.0',APP_DATA='14/10/2026';
+const APP_VERSAO='1.4.0',APP_DATA='14/10/2026';
 const MULTI_RAMAL=false; /* escolha de ramais escondida por enquanto; mude para true para reativar */
 const SITE='https://caminhodafe.com.br/ptbr/pousadas/';
 
@@ -18920,7 +18923,7 @@ const kmTxt=(x)=>String(Math.round(x*10)/10).replace('.',',');
 const esc=(s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const today=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate());};
 function fresh(){return{v:1,cfg:{inicio:isoDate(today()),kmInicial:0,media:20,total:317,orcamento:'',orcAlim:'',moeda:'BRL',descanso:0,ramal:'todos',grande:false,contraste:false,modoKm:'marco',tema:'auto',proxy:'',credTopo:false},
-  kmHist:[],hosp:[],ramalId:null,baseInfo:null,hospStore:{},ref:317,dicaInstalar:false,reservas:[],pagamentos:[],alimentacao:[],outros:[],cats:[],tab:'inicio'};}
+  kmHist:[],favs:{},hosp:[],ramalId:null,baseInfo:null,hospStore:{},ref:317,dicaInstalar:false,reservas:[],pagamentos:[],alimentacao:[],outros:[],cats:[],tab:'inicio'};}
 function load(){try{const t=localStorage.getItem(LS);if(t){const s=JSON.parse(t);const f=fresh();const o={...f,...s,cfg:{...f.cfg,...s.cfg}};
   if(!o.ramalId&&o.hosp&&o.hosp.length){o.ramalId='aguas-da-prata';o.baseInfo=o.baseInfo||{edicao:'19.0',atualizado:'30/09/2026',importadoEm:null,fonte:'embutida no app'};}
   (o.outros||[]).forEach(x=>{if(x.categoria==='Roupas e calçados')x.categoria='Vestuário';});o.cats=(o.cats||[]).filter(c=>!CAT_OUT.some(d=>Core.norm(d)===Core.norm(c)));
@@ -18951,7 +18954,7 @@ function contatoBtns(h,full){const ph=fone(h);let o='';const wa=ph.map(p=>({p,l:
   const first=ph[0];if(first&&!full)o+=`<a class="btn sm out" href="tel:+55${Core.foneInfo(first.numero).digits}">Ligar</a>`;
   return o;}
 function sitBadge(d){const s=Core.situacao(d);return s==='para-tras'?'<span class="badge k">já ficou para trás</span>':s==='no-ponto'?'<span class="badge g">você está neste ponto</span>':s==='a-frente'?'<span class="badge g">à frente</span>':'<span class="badge w">sem km</span>';}
-function badges(h){let b='';if(h.credencial)b+='<span class="badge g">carimbo de credencial</span>';if(h.ramal)b+=`<span class="badge">ramal ${h.ramal==='P'?'Pindamonhangaba':'Guaratinguetá'}</span>`;
+function badges(h){let b='';if(isFav(h))b+='<span class="badge fav">★ Favorito</span>';if(h.credencial)b+='<span class="badge g">carimbo de credencial</span>';if(h.ramal)b+=`<span class="badge">ramal ${h.ramal==='P'?'Pindamonhangaba':'Guaratinguetá'}</span>`;
   if(h.fora_trilha_km)b+=`<span class="badge">${num(h.fora_trilha_km*1000,0)} m fora da trilha</span>`;if(h.revisar&&h.revisar.length)b+='<span class="badge w">conferir dados</span>';
   if(h.disponibilidade&&h.disponibilidade!=='desconhecida')b+=`<span class="badge">${esc((DISP.find(d=>d[0]===h.disponibilidade)||[])[1])}</span>`;
   if(h.tipo==='apoio')b+=`<span class="badge k">${esc(h.categoria)}</span>`;return b;}
@@ -18972,7 +18975,7 @@ function lodCard(h,dist,eta,dias){const sit=Core.situacao(dist);const cls=sit===
   <div class="sub">${h.tipo==='hospedagem'?'Diária por pessoa: '+esc(precoTxt(h)):esc(h.categoria)}</div>
   ${eta?`<div class="sub"><b>Previsão de chegada: ${brDate(eta)}</b> (${dias===0?'hoje':dias+' dia'+(dias>1?'s':'')} de caminhada) — estimativa</div>`:''}
   <div>${badges(h)}</div>${amChips(h)}
-  <div class="actions">${contatoBtns(h)}<button class="btn sm alt" data-a="det" data-id="${h.id}">Detalhes</button>${h.tipo==='hospedagem'?`<button class="btn sm" data-a="agendar" data-id="${h.id}">Agendar</button>`:''}</div></div></div>`;}
+  <div class="actions">${contatoBtns(h)}<button class="btn sm alt" data-a="det" data-id="${h.id}">Detalhes</button>${favBtn(h)}${h.tipo==='hospedagem'?`<button class="btn sm" data-a="agendar" data-id="${h.id}">Agendar</button>`:''}</div></div></div>`;}
 /* ---------- renderização ---------- */
 function render(){document.documentElement.classList.toggle('big',!!S.cfg.grande);const tm=S.cfg.tema==='escuro'?'dark':S.cfg.tema==='claro'?'light':'';if(tm)document.documentElement.dataset.theme=tm;else delete document.documentElement.dataset.theme;document.body.classList.toggle('hc',!!S.cfg.contraste);
   $('#sub').textContent=ramalInfo()?'Ramal '+ramalInfo().nome+' → Aparecida':'Escolha seu ramal';
@@ -18987,11 +18990,13 @@ function smoothTop(){const y0=window.scrollY;if(y0<2)return;if(matchMedia('(pref
   const step=(now)=>{const k=Math.min(1,(now-t0)/dur);window.scrollTo(0,y0*(1-ease(k)));if(k<1)smoothId=requestAnimationFrame(step);};smoothId=requestAnimationFrame(step);}
 ['touchstart','wheel','keydown'].forEach(ev=>window.addEventListener(ev,()=>cancelAnimationFrame(smoothId),{passive:true}));
 function go(t){MV=null;S.tab=t;S.sub=S.sub||{};NAV.forEach(n=>{if(n[3].length>1&&n[3].includes(t))S.sub[n[0]]=t;});save();render();window.scrollTo(0,0);}
-const credTopo=(arr,get)=>S.cfg.credTopo?[...arr.filter(get),...arr.filter(x=>!get(x))]:arr;
+const isFav=(h)=>!!(S.favs&&S.favs[h.id]);
+const favBtn=(h)=>`<button type="button" class="btn sm ${isFav(h)?'':'alt'}" data-a="fav" data-id="${h.id}" aria-pressed="${isFav(h)}">${isFav(h)?'★ Favorito':'☆ Favoritar'}</button>`;
+const credTopo=(arr,get)=>{const rk=(x)=>{const h=get(x);return isFav(h)?0:(S.cfg.credTopo&&h.credencial)?1:2;};return arr.map((x,i)=>[x,i]).sort((a,b)=>rk(a[0])-rk(b[0])||a[1]-b[1]).map(p=>p[0]);};
 /* --- Início --- */
 function vInicio(){const at=pos(),f=Core.finance(S,hoje()),tot=Number(S.cfg.total)||0,ki=Number(S.cfg.kmInicial)||0,media=Number(S.cfg.media)||0;
   const perc=Math.max(0,at-ki);const pct=tot>ki?Math.min(100,perc/(tot-ki)*100):null;const ini=parseISO(S.cfg.inicio);
-  const lista=credTopo(Core.proximas(S,hoje(),{tipo:F.tipo,max:F.max,municipio:F.municipio,categoria:F.categoria,precoMax:F.precoMax,disp:F.disp,q:F.q,am:F.am,ramal:S.cfg.ramal}),x=>x.h.credencial);
+  const lista=credTopo(Core.proximas(S,hoje(),{tipo:F.tipo,max:F.max,municipio:F.municipio,categoria:F.categoria,precoMax:F.precoMax,disp:F.disp,q:F.q,am:F.am,ramal:S.cfg.ramal}),x=>x.h);
   const next=Core.proximas(S,hoje(),{tipo:'hospedagem',ramal:S.cfg.ramal}).find(x=>x.dist>0.05)||Core.proximas(S,hoje(),{tipo:'hospedagem',ramal:S.cfg.ramal})[0];
   const reservasAtivas=S.reservas.filter(r=>r.status!=='cancelada');const conf=reservasAtivas.filter(r=>r.status==='confirmada').length;
   const munis=[...new Set(S.hosp.map(h=>h.municipio).filter(Boolean))];const cats=[...new Set(S.hosp.filter(h=>F.tipo==='todos'||h.tipo===F.tipo).map(h=>h.categoria))];
@@ -19027,7 +19032,7 @@ function vInicio(){const at=pos(),f=Core.finance(S,hoje()),tot=Number(S.cfg.tota
 /* --- Pousadas --- */
 function vPousadas(){const at=pos();const rev=S.hosp.filter(h=>h.revisar&&h.revisar.length).length;
   let l=S.hosp.filter(h=>(FL.tipo==='todos'||h.tipo===FL.tipo)&&(!FL.municipio||h.municipio===FL.municipio)&&(!FL.categoria||h.categoria===FL.categoria)&&(!FL.revisar||(h.revisar&&h.revisar.length))&&Core.temComodidades(h,FL.am)&&(!FL.q||Core.norm(h.nome+' '+h.municipio).includes(Core.norm(FL.q))));
-  l.sort((a,b)=>(a.km_inicio??1e9)-(b.km_inicio??1e9));l=credTopo(l,x=>x.credencial);
+  l.sort((a,b)=>(a.km_inicio??1e9)-(b.km_inicio??1e9));l=credTopo(l,x=>x);
   const munis=[...new Set(S.hosp.map(h=>h.municipio).filter(Boolean))];const cats=[...new Set(S.hosp.map(h=>h.categoria))];
   const nh=S.hosp.filter(h=>h.tipo==='hospedagem').length,na=S.hosp.length-nh;
   let h=`<h2 style="margin-top:6px">Pousadas e hotéis</h2><div class="card"><b>Ramal ${esc((ramalInfo()||{}).nome||'')}</b><div class="sub">Lista oficial da Associação dos Amigos do Caminho da Fé · <b>${baseVer()}</b>${S.baseInfo&&S.baseInfo.importadoEm?' · carregada em '+brDate(S.baseInfo.importadoEm.slice(0,10)):''}</div>
@@ -19053,8 +19058,8 @@ function vReservas(){const f=Core.finance(S,hoje());let l=[...S.reservas].sort((
     h+=`<div class="card" style="${r.status==='cancelada'?'opacity:.6':''}"><h3>${esc(r.nome)}</h3><div class="sub">${esc(r.municipio)}${r.endereco?' · '+esc(r.endereco):''}</div>
     <div class="sub"><b>${brDate(r.entrada)} → ${brDate(r.saida)}</b> · ${r.diarias||'?'} diária(s) × ${brl(r.valorDiaria)}${Number(r.taxas)?' + taxas '+brl(r.taxas):''}</div>
     <div class="grid" style="grid-template-columns:repeat(3,1fr);margin:8px 0"><div class="stat"><span>Total previsto</span><b style="font-size:1rem">${brl(tot)}</b></div><div class="stat"><span>Pago</span><b style="font-size:1rem">${brl(pg)}</b></div><div class="stat"><span>Pendente</span><b style="font-size:1rem" class="${pd>0?'neg':'pos'}">${brl(pd)}</b></div></div>
-    <span class="badge ${r.status==='confirmada'?'g':r.status==='cancelada'?'k':'w'}">${esc(r.status)}</span><span class="badge ${sp==='pago'?'g':'w'}">${sp}</span>${r.codigo?`<span class="badge">cód. ${esc(r.codigo)}</span>`:''}${r.obs?`<div class="sub">${esc(r.obs)}</div>`:''}
-    <div class="actions">${r.telefone?contatoBtns({telefones:[{numero:r.telefone}],nome:r.nome,endereco:r.endereco,municipio:r.municipio}):''}<button class="btn sm" data-a="pagar" data-id="${r.id}">+ Pagamento</button><button class="btn sm alt" data-a="pags" data-id="${r.id}">Pagamentos</button><button class="btn sm alt" data-a="editres" data-id="${r.id}">Editar</button><button class="btn sm danger" data-a="delres" data-id="${r.id}">Excluir</button></div></div>`;});
+    <span class="badge ${r.status==='confirmada'?'g':r.status==='cancelada'?'k':'w'}">${esc(r.status)}</span><span class="badge ${sp==='pago'?'g':'w'}">${sp}</span>${r.pgto==='metade'?'<span class="badge">50% + 50%</span>':''}${r.codigo?`<span class="badge">cód. ${esc(r.codigo)}</span>`:''}${r.pgto==='metade'&&r.status!=='cancelada'?(()=>{const pm=Core.planoMetade(r,pg),vencida=parseISO(r.entrada)&&parseISO(r.entrada)<=hoje();return `<div class="sub" style="margin-top:6px">Adiantamento (50%): <b>${brl(pm.metade)}</b> — ${pm.adiantPendente>0?`<span class="neg">falta ${brl(pm.adiantPendente)}</span>`:'<span class="pos">pago</span>'}</div><div class="sub">Na entrada (${brDate(r.entrada)}): <b>${brl(pm.segunda)}</b> — ${pm.segundaPendente>0?`<span class="${vencida?'neg':''}">${vencida?'vencido, falta ':'a pagar na entrada, falta '}${brl(pm.segundaPendente)}</span>`:'<span class="pos">pago</span>'}</div>`;})():''}${r.obs?`<div class="sub">${esc(r.obs)}</div>`:''}
+    <div class="actions">${r.telefone?contatoBtns({telefones:[{numero:r.telefone}],nome:r.nome,endereco:r.endereco,municipio:r.municipio}):''}<button class="btn sm" data-a="pagar" data-id="${r.id}">${r.pgto==='metade'&&Core.planoMetade(r,pg).adiantPendente>0?'+ Adiantamento':'+ Pagamento'}</button><button class="btn sm alt" data-a="pags" data-id="${r.id}">Pagamentos</button><button class="btn sm alt" data-a="editres" data-id="${r.id}">Editar</button><button class="btn sm danger" data-a="delres" data-id="${r.id}">Excluir</button></div></div>`;});
   return h;}
 /* --- Alimentação / Demais custos --- */
 function vGastos(kind){const al=kind==='comida';const arr=al?S.alimentacao:S.outros;const cats=al?CAT_ALIM:[...CAT_OUT,...S.cats];const rg=FE[kind];
@@ -19118,7 +19123,7 @@ function detalhes(id){const h=S.hosp.find(x=>x.id===id);if(!h)return;const at=po
   ${h.revisar&&h.revisar.length?`<div class="err" style="background:var(--note);color:var(--notet)"><b>Conferir manualmente:</b><br>${h.revisar.map(esc).join('<br>')}</div>`:''}
   <h3 style="margin-top:12px">Disponibilidade (informada por você)</h3><select data-a="dispsel" data-id="${h.id}">${DISP.map(x=>`<option value="${x[0]}" ${h.disponibilidade===x[0]?'selected':''}>${x[1]}</option>`).join('')}</select><div class="small">O app não verifica vagas: registre aqui só o que a hospedagem confirmou.</div>
   <label class="f">Minhas notas</label><textarea data-a="notas" data-id="${h.id}">${esc(h.notas||'')}</textarea>
-  <div class="actions"><button class="btn" data-a="agendar" data-id="${h.id}">Adicionar às hospedagens agendadas</button><button class="btn alt" data-a="edith" data-id="${h.id}">Editar</button><button class="btn danger" data-a="delh" data-id="${h.id}">Excluir</button></div>`);}
+  <div class="actions"><button class="btn" data-a="agendar" data-id="${h.id}">Adicionar às hospedagens agendadas</button>${favBtn(h)}<button class="btn alt" data-a="edith" data-id="${h.id}">Editar</button><button class="btn danger" data-a="delh" data-id="${h.id}">Excluir</button></div>`);}
 function formHosp(id){const h=id?S.hosp.find(x=>x.id===id):{tipo:'hospedagem',categoria:'Pousada',telefones:[],origem:'manual'};
   openDlg(id?'Editar registro':'Novo registro',`<form id="fH" data-id="${id||''}">${fld('Nome *','nome',h.nome,'required')}<div class="row2">${fld('Município','municipio',h.municipio)}${fld('UF','uf',h.uf,'maxlength=2')}</div>
   <div class="row2"><div><label class="f">Tipo</label><select name="tipo"><option value="hospedagem" ${h.tipo==='hospedagem'?'selected':''}>Hospedagem</option><option value="apoio" ${h.tipo==='apoio'?'selected':''}>Ponto de apoio</option></select></div>${fld('Categoria','categoria',h.categoria)}</div>
@@ -19126,7 +19131,8 @@ function formHosp(id){const h=id?S.hosp.find(x=>x.id===id):{tipo:'hospedagem',ca
   <div class="row2">${fld('Diária mínima (R$)','preco_min',h.preco_min!=null?String(h.preco_min).replace('.',','):'','inputmode=decimal')}${fld('Diária máxima (R$)','preco_max',h.preco_max!=null?String(h.preco_max).replace('.',','):'','inputmode=decimal')}</div>
   ${fld('Telefones (separe por | e marque WhatsApp com *)','telefones',(h.telefones||[]).map(t=>t.numero+(t.whatsapp?'*':'')).join(' | '))}${fld('Endereço','endereco',h.endereco)}${fld('E-mail','email',h.email)}${fld('Observações','observacoes',h.observacoes)}
   <div id="fErr"></div><div class="actions"><button class="btn">Salvar</button><button type="button" class="btn alt" data-a="closeDlg">Cancelar</button></div></form>`);}
-function formReserva(id,pre={}){const r=id?S.reservas.find(x=>x.id===id):{status:'planejada',taxas:0,...pre};
+function formReserva(id,pre={}){const pre2={...pre};if(!id){const u=[...S.reservas].reverse().find(x=>x.status!=='cancelada'&&parseISO(x.saida));if(u){pre2.entrada=u.saida;pre2.saida=isoDate(addDays(parseISO(u.saida),1));}}
+  const r=id?S.reservas.find(x=>x.id===id):{status:'planejada',taxas:0,...pre2};
   const opts=S.hosp.filter(h=>h.tipo==='hospedagem').sort((a,b)=>a.nome.localeCompare(b.nome)).map(h=>`<option value="${h.id}" ${r.hospId===h.id?'selected':''}>${esc(h.nome)} — ${esc(h.municipio)}</option>`).join('');
   openDlg(id?'Editar reserva':'Nova reserva',`<form id="fR" data-id="${id||''}"><label class="f">Escolher da lista importada (opcional)</label><select name="hospId" id="rHosp"><option value="">— cadastrar manualmente —</option>${opts}</select>
   ${fld('Nome da hospedagem *','nome',r.nome,'required')}<div class="row2">${fld('Município','municipio',r.municipio)}${fld('Telefone','telefone',r.telefone)}</div>${fld('Endereço','endereco',r.endereco)}
@@ -19134,12 +19140,15 @@ function formReserva(id,pre={}){const r=id?S.reservas.find(x=>x.id===id):{status
   <div class="row2">${fld('Valor da diária (R$) *','valorDiaria',r.valorDiaria!=null?String(r.valorDiaria).replace('.',','):'','inputmode=decimal required')}${fld('Taxas adicionais (R$)','taxas',String(r.taxas||0).replace('.',','),'inputmode=decimal')}</div>
   <div class="stat" style="margin:10px 0"><span>Diárias / total previsto (automático)</span><b id="rCalc">—</b></div>
   <div class="row2"><div><label class="f">Status da reserva</label><select name="status">${ST_RES.map(s=>`<option ${r.status===s?'selected':''}>${s}</option>`).join('')}</select></div>${fld('Código de confirmação','codigo',r.codigo)}</div>
+  <label class="f">Forma de pagamento da reserva</label><select name="pgto"><option value="">Como combinado (sem divisão)</option><option value="metade" ${r.pgto==='metade'?'selected':''}>50% adiantado e 50% na data de entrada</option></select><div class="small" id="rPlano"></div>
   <label class="f">Observações</label><textarea name="obs">${esc(r.obs||'')}</textarea><p class="small">O valor pago e o pendente vêm dos pagamentos registrados (botão “+ Pagamento”). O status do pagamento é calculado automaticamente.</p>
   <div id="fErr"></div><div class="actions"><button class="btn">Salvar reserva</button><button type="button" class="btn alt" data-a="closeDlg">Cancelar</button></div></form>`);recalcRes();}
 function recalcRes(){const f=$('#fR');if(!f)return;const n=Core.diarias(f.entrada.value,f.saida.value),v=parseMoney(f.valorDiaria.value),t=parseMoney(f.taxas.value||'0');
-  $('#rCalc').textContent=isNaN(n)?'informe datas válidas (saída depois da entrada)':`${n} diária(s) · ${isNaN(v)||isNaN(t)?'—':brl(n*v+t)}`;}
-function formPag(rid){const r=S.reservas.find(x=>x.id===rid);openDlg('Registrar pagamento',`<p class="sub">${esc(r.nome)} · pendente ${brl(Core.pendenteReserva(S,r))}</p><form id="fP" data-id="${rid}">${fld('Data','data',isoDate(hoje()),'type=date required')}${fld('Valor (R$) *','valor',String(Core.pendenteReserva(S,r)).replace('.',','),'inputmode=decimal required')}
-  <label class="f">Forma</label><select name="forma">${FORMAS.map(f=>`<option>${f}</option>`).join('')}</select>${fld('Observação','obs','')}<div id="fErr"></div><div class="actions"><button class="btn">Salvar pagamento</button></div></form>`);}
+  $('#rCalc').textContent=isNaN(n)?'informe datas válidas (saída depois da entrada)':`${n} diária(s) · ${isNaN(v)||isNaN(t)?'—':brl(n*v+t)}`;
+  const pl=$('#rPlano');if(pl){if(f.pgto.value==='metade'&&!isNaN(n)&&!isNaN(v)&&!isNaN(t)){const tot=Core.round2(n*v+t),m=Core.round2(tot/2);pl.textContent=`Adiantamento agora: ${brl(m)} · Restante: ${brl(Core.round2(tot-m))} em ${brDate(f.entrada.value)}`;}else pl.textContent='';}}
+function formPag(rid){const r=S.reservas.find(x=>x.id===rid);const pm=r.pgto==='metade'?Core.planoMetade(r,Core.pagoReserva(S,rid)):null;const sug=pm?(pm.adiantPendente>0?pm.adiantPendente:Core.pendenteReserva(S,r)):Core.pendenteReserva(S,r);const rot=pm?(pm.adiantPendente>0?'Adiantamento (50%)':'Restante (na entrada)'):'';
+  openDlg('Registrar pagamento',`<p class="sub">${esc(r.nome)} · pendente ${brl(Core.pendenteReserva(S,r))}${rot?' · <b>'+rot+'</b>':''}</p><form id="fP" data-id="${rid}">${fld('Data','data',isoDate(hoje()),'type=date required')}${fld('Valor (R$) *','valor',String(sug).replace('.',','),'inputmode=decimal required')}
+  <label class="f">Forma</label><select name="forma">${FORMAS.map(f=>`<option>${f}</option>`).join('')}</select>${fld('Observação','obs',rot)}<div id="fErr"></div><div class="actions"><button class="btn">Salvar pagamento</button></div></form>`);}
 function listaPag(rid){const r=S.reservas.find(x=>x.id===rid);const l=S.pagamentos.filter(p=>p.reservaId===rid).sort((a,b)=>a.data.localeCompare(b.data));
   openDlg('Pagamentos — '+r.nome,l.length?l.map(p=>`<div class="item"><div>${brDate(p.data)} · ${esc(p.forma||'')}<div class="small">${esc(p.obs||'')}</div></div><div><b>${brl(p.valor)}</b> <button class="btn sm danger" data-a="delpag" data-id="${p.id}" data-r="${rid}">Excluir</button></div></div>`).join('')+`<div class="item"><b>Total pago</b><b>${brl(Core.pagoReserva(S,rid))}</b></div>`:'<div class="empty">Nenhum pagamento registrado.</div>');}
 function formGasto(kind,id,pre={}){const al=kind==='comida';const arr=al?S.alimentacao:S.outros;const g=id?arr.find(x=>x.id===id):{data:isoDate(hoje()),forma:'Dinheiro',status:'pago',...pre};const cats=al?CAT_ALIM:[...CAT_OUT,...S.cats];
@@ -19208,7 +19217,7 @@ function aplicarPlano(){if(!PEND)return;const {r,pl}=PEND;const keep=['id','disp
   const antigo=S.ref;S.ref=r.meta.ref;Core.setRef(S.ref);if(!Number(S.cfg.total)||Number(S.cfg.total)===antigo)S.cfg.total=S.ref;
   S.baseInfo={edicao:r.meta.edicao,atualizado:r.meta.atualizado,importadoEm:new Date().toISOString(),fonte:'PDF'};PEND=null;save();closeDlg();render();toast(`Lista atualizada: ${pl.novos.length} novos, ${pl.atualizados.length} alterados`);}
 /* ---------- alimentação: onde comer ---------- */
-function vOndeComer(){const at=pos();const lista=credTopo(Core.proximas(S,hoje(),{tipo:'todos',ramal:S.cfg.ramal,max:FF.max}).map(x=>({...x,fk:Core.foodKind(x.h)})).filter(x=>x.fk&&(FF.kind==='todos'||x.fk===FF.kind)),x=>x.h.credencial);
+function vOndeComer(){const at=pos();const lista=credTopo(Core.proximas(S,hoje(),{tipo:'todos',ramal:S.cfg.ramal,max:FF.max}).map(x=>({...x,fk:Core.foodKind(x.h)})).filter(x=>x.fk&&(FF.kind==='todos'||x.fk===FF.kind)),x=>x.h);
   const kinds=[['todos','Todos'],['restaurante','Restaurantes'],['lanche','Lanches e padarias'],['mercado','Mercados'],['hospedagem','Na hospedagem']];
   const lbl={restaurante:'Restaurante / refeição',lanche:'Lanche, padaria ou café',mercado:'Mercado',hospedagem:'Refeição na hospedagem'};
   let h=`<div class="card"><h3>Onde comer à frente</h3><div class="sub">A partir da placa ${num(Math.max(Core.REF-at,0),1)} (km ${num(at,1)} andados). Horários e cardápios não constam na lista: confirme por telefone.</div>
@@ -19217,7 +19226,7 @@ function vOndeComer(){const at=pos();const lista=credTopo(Core.proximas(S,hoje()
   if(!S.hosp.length)return h+'<div class="empty"><b>Lista do ramal não carregada</b>Carregue a lista em Pousadas e hotéis.</div></div>';
   if(!lista.length)return h+`<div class="empty"><b>Nada encontrado nos próximos ${FF.max} km</b>Aumente a distância. Em trechos sem estrutura de apoio, leve água e comida.</div></div>`;
   h+=lista.slice(0,FF.n).map(x=>{const rf=Core.refeicaoTxt(x.h);return `<div class="item" style="align-items:flex-start"><div style="min-width:0"><b>${esc(x.h.nome)}</b><div class="small">${esc(x.h.municipio)} · placa ${num(Core.marcoDe(x.h.km_inicio),1)}</div><span class="badge g">${lbl[x.fk]}</span>${rf?`<div class="small">${esc(rf)}</div>`:''}
-    <div class="actions">${contatoBtns(x.h)}<button class="btn sm alt" data-a="det" data-id="${x.h.id}">Detalhes</button><button class="btn sm" data-a="gastoaqui" data-id="${x.h.id}">Registrar gasto</button></div></div><div class="v" style="text-align:right">${x.dist<=0.05?'aqui':num(x.dist,1)+' km'}</div></div>`;}).join('');
+    <div class="actions">${contatoBtns(x.h)}<button class="btn sm alt" data-a="det" data-id="${x.h.id}">Detalhes</button>${favBtn(x.h)}<button class="btn sm" data-a="gastoaqui" data-id="${x.h.id}">Registrar gasto</button></div></div><div class="v" style="text-align:right">${x.dist<=0.05?'aqui':num(x.dist,1)+' km'}</div></div>`;}).join('');
   if(lista.length>FF.n)h+=`<button class="btn out" style="width:100%;margin-top:8px" data-a="ffmore">Mostrar mais (${lista.length-FF.n})</button>`;return h+'</div>';}
 
 /* ---------- mapa do caminho e localização ---------- */
@@ -19273,10 +19282,10 @@ function vMapa(){const at=pos();const tot=Core.REF;
   if(GPS){const q=encodeURIComponent;const near=GPS.distKm>15;
     h+=`<div class="warnbox" style="margin-top:10px">Localização obtida (precisão ±${Math.round(GPS.acc)} m). Pelo traçado aproximado, você estaria perto da <b>placa ${num(marco(GPS.km),1)}</b> (${num(GPS.km,1)} km andados).${near?` <b>Você parece estar a cerca de ${num(GPS.distKm,0)} km do caminho</b>; a estimativa usa o ponto mais próximo do traçado.`:''} É só uma estimativa: o erro pode passar de vários km. Sua posição no app não muda sozinha.
     <div class="actions"><button class="btn sm" data-a="gpsusar">Usar como minha posição</button><a class="btn sm out" target="_blank" rel="noopener" href="https://www.google.com/maps/search/${q('pousada')}/@${GPS.lat},${GPS.lng},14z">Pousadas no Google Maps</a><a class="btn sm out" target="_blank" rel="noopener" href="https://www.google.com/maps/search/${q('restaurante lanchonete')}/@${GPS.lat},${GPS.lng},14z">Comida no Google Maps</a></div></div>`;
-    const lista=S.hosp.filter(x=>x.km_inicio!=null&&Math.abs(x.km_inicio-GPS.km)<=GF.w&&(S.cfg.ramal==='todos'||!x.ramal||x.ramal===S.cfg.ramal)&&(GF.kind==='todos'?(x.tipo==='hospedagem'||Core.foodKind(x)):GF.kind==='dormir'?x.tipo==='hospedagem':!!Core.foodKind(x))).sort((a,b)=>Math.abs(a.km_inicio-GPS.km)-Math.abs(b.km_inicio-GPS.km));
+    const lista=credTopo(S.hosp.filter(x=>x.km_inicio!=null&&Math.abs(x.km_inicio-GPS.km)<=GF.w&&(S.cfg.ramal==='todos'||!x.ramal||x.ramal===S.cfg.ramal)&&(GF.kind==='todos'?(x.tipo==='hospedagem'||Core.foodKind(x)):GF.kind==='dormir'?x.tipo==='hospedagem':!!Core.foodKind(x))).sort((a,b)=>Math.abs(a.km_inicio-GPS.km)-Math.abs(b.km_inicio-GPS.km)),x=>x);
     h+=`<h3 style="margin-top:12px">Perto de mim</h3><div class="chips">${[3,5,10].map(v=>`<button class="chip ${GF.w===v?'on':''}" data-a="gpsw" data-v="${v}">±${v} km</button>`).join('')}${[['todos','Tudo'],['dormir','Dormir'],['comer','Comer']].map(k=>`<button class="chip ${GF.kind===k[0]?'on':''}" data-a="gpsk" data-v="${k[0]}">${k[1]}</button>`).join('')}</div>`;
     if(!lista.length)h+='<div class="empty"><b>Nada cadastrado neste trecho</b>Aumente a faixa de km. Em partes do caminho não há estrutura de apoio.</div>';
-    else h+=lista.slice(0,8).map(x=>{const d=x.km_inicio-GPS.km;const fk=Core.foodKind(x);return `<div class="item" style="align-items:flex-start"><div style="min-width:0"><b>${esc(x.nome)}</b><div class="small">${esc(x.municipio)} · ${x.tipo==='hospedagem'?'hospedagem':'comida ('+esc(x.categoria)+')'}${fk&&x.tipo==='hospedagem'?' · refeição':''}</div><div class="actions">${contatoBtns(x)}<button class="btn sm alt" data-a="det" data-id="${x.id}">Detalhes</button></div></div><div class="v" style="text-align:right">~${num(Math.abs(d),1)} km<div class="small">${d>0.5?'à frente':d<-0.5?'atrás':'aqui'}</div></div></div>`;}).join('')+(lista.length>8?`<div class="small">Mostrando 8 de ${lista.length}. Reduza a faixa para ver só os mais próximos.</div>`:'');}
+    else h+=lista.slice(0,8).map(x=>{const d=x.km_inicio-GPS.km;const fk=Core.foodKind(x);return `<div class="item" style="align-items:flex-start"><div style="min-width:0"><b>${esc(x.nome)}</b><div class="small">${esc(x.municipio)} · ${x.tipo==='hospedagem'?'hospedagem':'comida ('+esc(x.categoria)+')'}${fk&&x.tipo==='hospedagem'?' · refeição':''}</div><div class="actions">${contatoBtns(x)}<button class="btn sm alt" data-a="det" data-id="${x.id}">Detalhes</button>${favBtn(x)}</div></div><div class="v" style="text-align:right">~${num(Math.abs(d),1)} km<div class="small">${d>0.5?'à frente':d<-0.5?'atrás':'aqui'}</div></div></div>`;}).join('')+(lista.length>8?`<div class="small">Mostrando 8 de ${lista.length}. Reduza a faixa para ver só os mais próximos.</div>`:'');}
   return h+'</div>';}
 function pedirGps(){if(!navigator.geolocation){GPSMSG='Este navegador não oferece localização.';render();return;}GPSMSG='Obtendo localização… (autorize o acesso quando o navegador perguntar)';render();
   navigator.geolocation.getCurrentPosition(p=>{const e=Core.gpsToKm(p.coords.latitude,p.coords.longitude,S.cfg.ramal==='G'?'G':S.cfg.ramal==='P'?'P':'todos');GPS={lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy||0,km:e.km,distKm:e.distKm,at:Date.now()};GPSMSG='';render();},
@@ -19298,6 +19307,7 @@ async function download(bytes,name,type){const b=new Blob([bytes],{type});let d=
 /* ---------- ações ---------- */
 document.addEventListener('click',async(e)=>{const el=e.target.closest('[data-a]');if(!el||el.tagName==='SELECT'||(el.tagName==='INPUT'&&el.type!=='checkbox'))return;const a=el.dataset.a,id=el.dataset.id;
   switch(a){
+  case'fav':{S.favs=S.favs||{};if(S.favs[id])delete S.favs[id];else S.favs[id]=true;save();const h0=S.hosp.find(x=>x.id===id);const dlgAberto=$('#dlg').open&&h0&&$('#dlgT').textContent===h0.nome;render();if(dlgAberto)detalhes(id);toast(S.favs[id]?'Adicionado aos favoritos':'Removido dos favoritos');break;}
   case'tab':if(S.tab===el.dataset.t)smoothTop();else go(el.dataset.t);break;
   case'fam':{const k=el.dataset.k;F.am=F.am.includes(k)?F.am.filter(x=>x!==k):[...F.am,k];F.n=15;render();break;}case'famclr':F.am=[];F.n=15;render();break;
   case'flam':{const k=el.dataset.k;FL.am=FL.am.includes(k)?FL.am.filter(x=>x!==k):[...FL.am,k];FL.n=40;render();break;}case'flamclr':FL.am=[];FL.n=40;render();break;
@@ -19385,7 +19395,7 @@ document.addEventListener('submit',async(e)=>{e.preventDefault();const f=e.targe
     save();closeDlg();render();toast('Registro salvo');return;}
   if(f.id==='fR'){const nome=v('nome');if(!nome)return err('Informe o nome da hospedagem.');const n=Core.diarias(v('entrada'),v('saida'));if(isNaN(n))return err('Datas inválidas: a saída deve ser depois da entrada.');
     const vd=parseMoney(v('valorDiaria'));if(isNaN(vd))return err('Valor da diária inválido.');const tx=parseMoney(v('taxas')||'0');if(isNaN(tx))return err('Valor das taxas inválido.');
-    const o={nome,municipio:v('municipio'),endereco:v('endereco'),telefone:v('telefone'),hospId:v('hospId')||null,entrada:v('entrada'),saida:v('saida'),diarias:n,valorDiaria:vd,taxas:tx,status:v('status'),codigo:v('codigo'),obs:v('obs')};
+    const o={nome,municipio:v('municipio'),endereco:v('endereco'),telefone:v('telefone'),hospId:v('hospId')||null,entrada:v('entrada'),saida:v('saida'),diarias:n,valorDiaria:vd,taxas:tx,status:v('status'),codigo:v('codigo'),pgto:v('pgto'),obs:v('obs')};
     if(f.dataset.id)Object.assign(S.reservas.find(r=>r.id===f.dataset.id),o);else S.reservas.push({id:Core.uid('r'),...o});save();closeDlg();render();toast('Reserva salva — total '+brl(n*vd+tx));return;}
   if(f.id==='fP'){const val=parseMoney(v('valor'));if(isNaN(val)||val<=0)return err('Informe um valor de pagamento maior que zero.');if(!parseISO(v('data')))return err('Data inválida.');
     const r=S.reservas.find(x=>x.id===f.dataset.id);const pend=Core.pendenteReserva(S,r);if(val>pend+0.004&&!await ask(`O pagamento (${brl(val)}) é maior que o valor pendente (${brl(pend)}). Registrar mesmo assim?`))return;
