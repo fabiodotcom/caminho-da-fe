@@ -1,0 +1,46 @@
+name: Atualizar base de hospedagens
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch: {}
+permissions:
+  contents: write
+  issues: write
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependências
+        run: pip install pdfplumber numpy Pillow
+      - name: Verificar edição no site
+        id: pdf
+        run: python baixar_pdf.py fonte.json
+      - name: Gerar nova base
+        if: steps.pdf.outputs.mudou == 'true'
+        env:
+          PDF_IN: ${{ steps.pdf.outputs.arquivo }}
+          OUT: base-ramal-principal.novo.json
+        run: python gerar_base.py
+      - name: Validar contra a base atual
+        if: steps.pdf.outputs.mudou == 'true'
+        run: python validar.py base-ramal-principal.json base-ramal-principal.novo.json
+      - name: Publicar se válida
+        if: steps.pdf.outputs.mudou == 'true'
+        run: |
+          mv base-ramal-principal.novo.json base-ramal-principal.json
+          mv fonte.pendente.json fonte.json
+          git config user.name "atualizacao-automatica"
+          git config user.email "actions@users.noreply.github.com"
+          git add base-ramal-principal.json fonte.json
+          git commit -m "Atualiza base: edição ${{ steps.pdf.outputs.edicao }}" || echo "sem mudanças"
+          git push
+      - name: Avisar se precisar de conferência
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({owner:context.repo.owner,repo:context.repo.repo,title:"Atualização da base precisa de conferência",body:"A rotina não publicou a nova base. Veja o log do workflow."})
