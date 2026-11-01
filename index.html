@@ -18910,7 +18910,7 @@ const RAMAIS=[{id:'aguai',n:12,nome:'Aguaí',url:'https://caminhodafe.com.br/ptb
 {id:'santa-rita',n:16,nome:'Santa Rita de Cássia',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-16-Ramal-Santa-Rita-de-Cassia-Santa-Rita-de-Caldas-Edicao-19.0.pdf',nota:'Santa Rita de Caldas · Ouro Fino'},
 {id:'sao-jose',n:1,nome:'São José',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-01-Ramal-Sao-Jose-Edicao-19.0-1.pdf',nota:''},
 {id:'tambau',n:8,nome:'Tambaú',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-08-Ramal-Tambau-Edicao-19.0.pdf',nota:''}];
-const APP_VERSAO='1.6.0',APP_DATA='14/10/2026';
+const APP_VERSAO='1.7.1',APP_DATA='14/10/2026';
 const MULTI_RAMAL=false; /* escolha de ramais escondida por enquanto; mude para true para reativar */
 const SITE='https://caminhodafe.com.br/ptbr/pousadas/';
 
@@ -18925,8 +18925,9 @@ const kmTxt=(x)=>String(Math.round(x*10)/10).replace('.',',');
 const esc=(s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const today=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate());};
 function fresh(){return{v:1,cfg:{inicio:isoDate(today()),kmInicial:0,media:20,total:317,orcamento:'',orcAlim:'',moeda:'BRL',descanso:0,ramal:'todos',grande:false,contraste:false,modoKm:'marco',tema:'auto',proxy:'',credTopo:false,favTopo:true,autoArquivar:true},
-  kmHist:[],favs:{},hosp:[],ramalId:null,baseInfo:null,hospStore:{},ref:317,dicaInstalar:false,reservas:[],pagamentos:[],alimentacao:[],outros:[],cats:[],tab:'inicio'};}
+  kmHist:[],favs:{},hosp:[],ramalId:null,baseInfo:null,hospStore:{},ref:317,dicaInstalar:false,setupFeito:false,reservas:[],pagamentos:[],alimentacao:[],outros:[],cats:[],tab:'inicio'};}
 function load(){try{const t=localStorage.getItem(LS);if(t){const s=JSON.parse(t);const f=fresh();const o={...f,...s,cfg:{...f.cfg,...s.cfg}};
+  if(s.setupFeito===undefined)o.setupFeito=true; /* quem já usava o app não vê a tela inicial */
   if(!o.ramalId&&o.hosp&&o.hosp.length){o.ramalId='aguas-da-prata';o.baseInfo=o.baseInfo||{edicao:'19.0',atualizado:'30/09/2026',importadoEm:null,fonte:'embutida no app'};}
   (o.outros||[]).forEach(x=>{if(x.categoria==='Roupas e calçados')x.categoria='Vestuário';});o.cats=(o.cats||[]).filter(c=>!CAT_OUT.some(d=>Core.norm(d)===Core.norm(c)));
   (o.hosp||[]).forEach(h=>{if(h.credencial&&!(h.comodidades||[]).includes('credencial'))h.comodidades=[...(h.comodidades||[]),'credencial'];});
@@ -18979,10 +18980,20 @@ function lodCard(h,dist,eta,dias){const sit=Core.situacao(dist);const cls=sit===
   <div>${badges(h)}</div>${amChips(h)}
   <div class="actions">${contatoBtns(h)}<button class="btn sm alt" data-a="det" data-id="${h.id}">Detalhes</button>${favBtn(h)}${h.tipo==='hospedagem'?`<button class="btn sm out" data-a="checkin" data-id="${h.id}">Check-in</button><button class="btn sm" data-a="agendar" data-id="${h.id}">Agendar</button>`:''}</div></div></div>`;}
 /* ---------- renderização ---------- */
+function vSetup(){const c=S.cfg;const op=(v,t)=>`<option value="${v}" ${c.ramal===v?'selected':''}>${t}</option>`;
+  return `<div class="hero"><h2 style="color:#fff;margin:0 0 6px">Bem-vindo, peregrino!</h2><p class="note" style="font-size:.95rem;opacity:1">Vamos configurar o essencial para planejar sua caminhada. Você pode mudar tudo depois em Ajustes.</p></div>
+  <form class="card" id="fSetup"><label class="f">Ramal</label><select name="ramal0" disabled><option>Águas da Prata (ramal principal)</option></select><p class="small">Outros ramais serão liberados em breve.</p>
+  <label class="f">Data de início da caminhada</label><input type="date" name="inicio" value="${esc(c.inicio)}" required>
+  <label class="f">Quantos km pretende caminhar por dia?</label><input name="media" inputmode="decimal" value="${num(c.media,1)}" required>
+  <label class="f">Ramal de finalização (a partir de Campos do Jordão)</label><select name="ramal">${op('todos','Ainda não decidi')}${op('P','Pindamonhangaba')}${op('G','Guaratinguetá')}</select>
+  <p class="small">Define quais pousadas e lanchonetes aparecem no trecho final. Pode mudar depois em Ajustes.</p>
+  <div id="setupErr"></div><button class="btn" style="width:100%;margin-top:6px">Começar</button></form>`;}
 function render(){document.documentElement.classList.toggle('big',!!S.cfg.grande);const tm=S.cfg.tema==='escuro'?'dark':S.cfg.tema==='claro'?'light':'';if(tm)document.documentElement.dataset.theme=tm;else delete document.documentElement.dataset.theme;document.body.classList.toggle('hc',!!S.cfg.contraste);
-  $('#sub').textContent=ramalInfo()?'Ramal '+ramalInfo().nome+' → Aparecida':'Escolha seu ramal';
+  if(!MULTI_RAMAL&&!S.ramalId)trocarRamal('aguas-da-prata');
   $('#sub').textContent=ramalInfo()?'Ramal '+ramalInfo().nome:'Escolha seu ramal';
-  if(!S.ramalId){$('#nav').style.display='none';$('#main').innerHTML=vOnboarding();return;}$('#nav').style.display='';
+  if(!S.ramalId){$('#nav').style.display='none';$('#main').innerHTML=vOnboarding();return;}
+  if(S.setupFeito&&!window.__chkDone){window.__chkDone=true;setTimeout(verificarSeNecessario,1500);}
+  if(!S.setupFeito){$('#sub').textContent='Configuração inicial';$('#nav').style.display='none';$('#main').innerHTML=vSetup();return;}$('#nav').style.display='';
   $('#nav').innerHTML=NAV.map(n=>{const act=n[3].includes(S.tab);const tgt=act?S.tab:((S.sub&&n[3].includes(S.sub[n[0]]))?S.sub[n[0]]:n[3][0]);return `<button data-a="tab" data-t="${tgt}" class="${act?'on':''}" aria-label="${n[4]}"><svg viewBox="0 0 24 24">${ICON[n[2]]}</svg>${n[1]}</button>`;}).join('');
   const gk=Object.keys(SEGS).find(g=>SEGS[g].some(x=>x[0]===S.tab));const seg=gk?`<div class="seg">${SEGS[gk].map(([t,l])=>`<button type="button" data-a="tab" data-t="${t}" class="${S.tab===t?'on':''}">${l}</button>`).join('')}</div>`:'';
   const fn={inicio:vInicio,pousadas:vPousadas,reservas:vReservas,comida:()=>vGastos('comida'),custos:()=>vGastos('custos'),relatorios:vRelatorios,config:vConfig}[S.tab];
@@ -19040,7 +19051,7 @@ function vPousadas(){const at=pos();const rev=S.hosp.filter(h=>h.revisar&&h.revi
   let h=`<h2 style="margin-top:6px">Pousadas e hotéis</h2><div class="card"><b>Ramal ${esc((ramalInfo()||{}).nome||'')}</b><div class="sub">Lista oficial da Associação dos Amigos do Caminho da Fé · <b>${baseVer()}</b>${S.baseInfo&&S.baseInfo.importadoEm?' · carregada em '+brDate(S.baseInfo.importadoEm.slice(0,10)):''}</div>
   <div class="sub">${S.hosp.length} registros: ${nh} hospedagens e ${na} pontos de apoio. <b>${rev}</b> com dados para conferir. O que não consta na lista aparece como “Não informado”.</div>
   <div class="actions">${MULTI_RAMAL?'<button class="btn sm alt" data-a="trocarramal">Trocar de ramal</button>':''}</div>
-  <div class="actions"><button class="btn sm alt" data-a="newh">+ Novo registro</button><button class="btn sm out" data-a="csvout">Exportar CSV</button></div></div>
+  <div class="actions"><button class="btn sm" data-a="verupd">Verificar atualização</button><button class="btn sm alt" data-a="newh">+ Novo registro</button><button class="btn sm out" data-a="csvout">Exportar CSV</button></div></div>
   <div class="card"><input data-a="flq" value="${esc(FL.q)}" placeholder="Buscar por nome ou município"><div class="row2"><div><label class="f">Município</label><select data-a="flsel" data-k="municipio"><option value="">Todos</option>${munis.map(m=>`<option ${FL.municipio===m?'selected':''}>${esc(m)}</option>`).join('')}</select></div>
   <div><label class="f">Tipo</label><select data-a="flsel" data-k="categoria"><option value="">Todos</option>${cats.map(m=>`<option ${FL.categoria===m?'selected':''}>${esc(m)}</option>`).join('')}</select></div></div>
   <div class="chips" style="margin-top:8px"><button class="chip ${FL.tipo==='hospedagem'?'on':''}" data-a="fltipo" data-v="hospedagem">Hospedagens</button><button class="chip ${FL.tipo==='apoio'?'on':''}" data-a="fltipo" data-v="apoio">Pontos de apoio</button><button class="chip ${FL.tipo==='todos'?'on':''}" data-a="fltipo" data-v="todos">Todos</button><button class="chip ${FL.revisar?'on':''}" data-a="flrev">A conferir (${rev})</button></div>
@@ -19160,11 +19171,11 @@ function formGasto(kind,id,pre={}){const al=kind==='comida';const arr=al?S.alime
   <div class="row2"><div><label class="f">Forma de pagamento</label><select name="forma">${FORMAS.map(f=>`<option ${g.forma===f?'selected':''}>${f}</option>`).join('')}</select></div><div><label class="f">Pagamento</label><select name="status"><option value="pago" ${g.status!=='pendente'?'selected':''}>Pago</option><option value="pendente" ${g.status==='pendente'?'selected':''}>Pendente</option></select></div></div>
   ${fld('Observações','obs',g.obs)}<div id="fErr"></div><div class="actions"><button class="btn">Salvar</button><button type="button" class="btn alt" data-a="closeDlg">Cancelar</button></div></form>`);}
 function ask(msg,ok='Confirmar'){return new Promise(res=>{let done=false;openDlg('Confirmar',`<p>${esc(msg)}</p><div class="actions"><button type="button" class="btn danger" id="askOk">${ok}</button><button type="button" class="btn alt" id="askNo">Cancelar</button></div>`);
-  const d=$('#dlg');d.addEventListener('close',()=>{if(!done){done=true;res(false);}},{once:true});
-  $('#askOk').onclick=()=>{done=true;closeDlg();res(true);};$('#askNo').onclick=()=>closeDlg();});}
+  const d=$('#dlg');const onc=()=>{if(d.open)return;d.removeEventListener('close',onc);if(!done){done=true;res(false);}};d.addEventListener('close',onc);
+  $('#askOk').onclick=()=>{done=true;d.removeEventListener('close',onc);closeDlg();res(true);};$('#askNo').onclick=()=>closeDlg();});}
 function askText(msg){return new Promise(res=>{let done=false;openDlg('Nova categoria',`<label class="f">${esc(msg)}</label><input id="askIn" autocomplete="off"><div class="actions"><button type="button" class="btn" id="askOk">Salvar</button><button type="button" class="btn alt" id="askNo">Cancelar</button></div>`);
-  const d=$('#dlg');d.addEventListener('close',()=>{if(!done){done=true;res('');}},{once:true});
-  $('#askOk').onclick=()=>{const v=$('#askIn').value;done=true;closeDlg();res(v);};$('#askNo').onclick=()=>closeDlg();});}
+  const d=$('#dlg');const onc=()=>{if(d.open)return;d.removeEventListener('close',onc);if(!done){done=true;res('');}};d.addEventListener('close',onc);
+  $('#askOk').onclick=()=>{const v=$('#askIn').value;done=true;d.removeEventListener('close',onc);closeDlg();res(v);};$('#askNo').onclick=()=>closeDlg();});}
 
 /* ---------- ramais, base de dados e atualização ---------- */
 const ramalInfo=()=>RAMAIS.find(r=>r.id===S.ramalId)||null;
@@ -19186,6 +19197,36 @@ const viaProxy=(u)=>{const p=(S.cfg.proxy||'').trim();return p?p+encodeURICompon
 async function baixar(u,tipo){const r=await fetch(viaProxy(u),{cache:'no-store'});if(!r.ok)throw new Error('Resposta do site: '+r.status);if(tipo==='text'){const t=await r.text();if(!/<html|<a\s/i.test(t)||/^\s*%PDF/.test(t))throw new Error('A resposta não é a página esperada.');return t;}
   const b=await r.blob();const h=new Uint8Array(await b.slice(0,5).arrayBuffer());if(String.fromCharCode(...h)!=='%PDF-')throw new Error('O endereço não devolveu um arquivo PDF.');return b;}
 async function baixarEProcessar(url){const m=$('#dlgMsg');if(m)m.innerHTML='<p class="small">Baixando…</p>';try{const b=await baixar(url,'blob');await processarPdf(b);}catch(e){const mm=$('#dlgMsg');if(mm)mm.innerHTML=falhaRede(e);else openDlg('Download',falhaRede(e));}}
+/* ---------- atualização automática da base pelo site (GitHub Pages) ---------- */
+const BASE_URL=new URL('base-ramal-principal.json',location.href).href;
+const FONTE_URL=new URL('fonte.json',location.href).href;
+const numEd=(x)=>{const v=parseFloat(String(x||'').replace(',','.'));return isNaN(v)?-1:v;};
+const dataEd=(x)=>{const m=/^(\d\d)\/(\d\d)\/(\d{4})$/.exec(x||'');return m?+(m[3]+m[2]+m[1]):0;};
+function plusNovo(local,site){if(numEd(site.edicao)!==numEd(local.edicao))return numEd(site.edicao)>numEd(local.edicao);return dataEd(site.atualizado)>dataEd(local.atualizado);}
+function mesclarPorId(hosp,novos){const idx=new Map(hosp.map(h=>[h.id,h]));const idsNovos=new Set(novos.map(n=>n.id));let add=0,upd=0,rem=0;
+  for(const n of novos){const e=idx.get(n.id);
+    if(!e){hosp.push({...n,disponibilidade:'desconhecida',notas:''});add++;continue;}
+    if(e.editado){/* registro corrigido à mão: mantém suas correções, só atualiza o que não foi editado */const keep={};Object.keys(n).forEach(k=>{if(!(k in e))keep[k]=n[k];});Object.assign(e,keep);continue;}
+    const d=e.disponibilidade,nt=e.notas;Object.assign(e,n,{disponibilidade:d,notas:nt});upd++;}
+  for(let i=hosp.length-1;i>=0;i--){const h=hosp[i];if(!idsNovos.has(h.id)&&String(h.origem||'').startsWith('pdf')&&!h.editado){hosp.splice(i,1);rem++;}}
+  return{add,upd,rem};}
+async function atualizarBaseSite(manual){
+  if(!S.ramalId)return;const agora=Date.now();S.baseCheckAt=agora;save();
+  if(!navigator.onLine){if(manual)toast('Sem conexão: não foi possível verificar a lista agora.',1);return;}
+  let fonte,nova;
+  try{const r=await fetch(FONTE_URL,{cache:'no-store'});if(!r.ok)throw new Error('site '+r.status);fonte=await r.json();}
+  catch(e){if(manual)toast('Não foi possível consultar a versão da lista no site.',1);return;}
+  const local=S.baseInfo||{edicao:'',atualizado:''};
+  if(!fonte||!fonte.edicao){if(manual)toast('Versão da lista não encontrada no site.',1);return;}
+  if(!plusNovo(local,{edicao:fonte.edicao,atualizado:fonte.atualizado||''})){if(manual)toast(`Sua lista já está na versão ${local.edicao} (a mais recente).`);return;}
+  try{const r=await fetch(BASE_URL,{cache:'no-store'});if(!r.ok)throw new Error('base '+r.status);nova=await r.json();}
+  catch(e){if(manual)toast('Não foi possível baixar a nova lista. Tente mais tarde.',1);return;}
+  if(!nova||!Array.isArray(nova.hosp)||nova.hosp.length<200){if(manual)toast('A lista recebida do site parece incompleta. Mantive a sua.',1);return;}
+  const m=mesclarPorId(S.hosp,nova.hosp);
+  S.baseInfo={edicao:nova.meta.edicao,atualizado:nova.meta.atualizado,importadoEm:new Date().toISOString(),fonte:'site'};save();render();
+  toast(`Lista atualizada para a edição ${nova.meta.edicao}: ${m.add} nova(s), ${m.upd} atualizada(s), ${m.rem} retirada(s).`);}
+/* verificação silenciosa: no máximo uma vez a cada 24 h, quando o app abre com internet */
+function verificarSeNecessario(){if(!S.ramalId||!S.setupFeito)return;if(S.baseCheckAt&&Date.now()-S.baseCheckAt<24*3600*1000)return;atualizarBaseSite(false);}
 async function verificar(){const r=ramalInfo();openDlg('Verificar atualização','<p>Consultando o site do Caminho da Fé…</p><div id="dlgMsg"></div>');
   try{const html=await baixar(SITE,'text');const nn=String(r.n).padStart(2,'0');
     const re=new RegExp('(?:https?:\\/\\/caminhodafe\\.com\\.br)?\\/ptbr\\/wp-content\\/uploads\\/[^"\'\\s<>]*Planilha-'+nn+'-[^"\'\\s<>]*\\.pdf','i');const m=re.exec(html);
@@ -19320,7 +19361,7 @@ document.addEventListener('click',async(e)=>{const el=e.target.closest('[data-a]
   case'pickramal':{const r=RAMAIS.find(x=>x.id===id);closeDlg();const novo=!(S.hospStore[id]||id==='aguas-da-prata');trocarRamal(id);S.tab=novo?'pousadas':'inicio';save();render();window.scrollTo(0,0);if(novo)dlgBaixar(r,true);else toast('Ramal '+r.nome+' selecionado');break;}
   case'trocarramal':openDlg('Trocar de ramal','<p class="small">Reservas e gastos são mantidos. A lista de pousadas e a posição (km) são guardadas separadamente para cada ramal.</p>'+listaRamais());break;
   case'baixarbtn':dlgBaixar(ramalInfo(),!S.baseInfo);break;
-  case'verupd':verificar();break;
+  case'verupd':atualizarBaseSite(true);break;
   case'escolherpdf':closeDlg();$('#fileIn').dataset.mode='pdf';$('#fileIn').accept='.pdf,application/pdf';$('#fileIn').value='';$('#fileIn').click();break;
   case'baixarsite':{const r=RAMAIS.find(x=>x.id===id)||ramalInfo();await baixarEProcessar(r.url);break;}
   case'baixarurl':await baixarEProcessar(pendUrl);break;
@@ -19395,6 +19436,9 @@ function importFile(el){const f=el.files[0];if(!f)return;if(el.dataset.mode==='p
     const m=Core.mesclarBase(S.hosp,r.itens);save();render();openDlg('Importação concluída',`<p><b>${r.itens.length}</b> linha(s) válida(s): ${m.add} novo(s), ${m.upd} atualizado(s). Registros com o mesmo id não são duplicados.</p>${r.erros.length?`<div class="err"><b>${r.erros.length} linha(s) ignorada(s):</b><br>${r.erros.slice(0,10).map(esc).join('<br>')}</div>`:''}`);}
   else{await restoreFrom(JSON.parse(String(rd.result)));}}catch(err){toast('Falha na importação: '+err.message,1);}};rd.readAsText(f,'utf-8');}
 document.addEventListener('submit',async(e)=>{e.preventDefault();const f=e.target;const err=(m)=>{$('#fErr')?($('#fErr').innerHTML=`<div class="err">${esc(m)}</div>`):0;};const v=(n)=>(f[n]?f[n].value.trim():'');
+  if(f.id==='fSetup'){const media=parseKm(v('media'));const E=(m)=>{$('#setupErr').innerHTML=`<div class="err">${esc(m)}</div>`;};
+    if(!parseISO(v('inicio')))return E('Informe uma data de início válida.');if(isNaN(media)||media<=0)return E('Informe quantos km por dia pretende caminhar (maior que zero).');
+    Object.assign(S.cfg,{inicio:v('inicio'),media,ramal:v('ramal')||'todos'});S.setupFeito=true;S.tab='inicio';save();render();window.scrollTo(0,0);toast('Tudo pronto! Boa caminhada.');setTimeout(()=>atualizarBaseSite(false),800);return;}
   if(f.id==='cfgForm'){const km=parseKm(v('kmInicial')||'0'),media=parseKm(v('media')),tot=v('total')?parseKm(v('total')):0,orc=v('orcamento')?parseMoney(v('orcamento')):'',oa=v('orcAlim')?parseMoney(v('orcAlim')):'',ds=v('descanso')?parseInt(v('descanso'),10):0;
     const E=(m)=>{$('#cfgErr').innerHTML=`<div class="err">${esc(m)}</div>`;};
     if(!parseISO(v('inicio')))return E('Informe uma data de início válida.');if(isNaN(km))return E('Km inicial inválido.');if(isNaN(media)||media<=0)return E('A média diária deve ser maior que zero.');if(isNaN(tot))return E('Distância total inválida.');if(tot&&tot<=km)return E('A distância total deve ser maior que o km inicial.');
