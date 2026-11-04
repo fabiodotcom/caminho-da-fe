@@ -64,9 +64,10 @@ def montar(raw,ICONLAB_IN):
         km=e['km_pdf'];dist=e['dist']
         ramal=e['ramal']
         if mun.startswith('Águas da Prata'):
-            kini=round(dist if dist is not None else (TOTAL-km),2); kpdf=km if km is not None else None
+            kini=(round(dist,2) if dist is not None else (round(TOTAL-km,2) if km is not None else None)); kpdf=km if km is not None else None
         elif mun=='Aparecida':
-            kini=round(TOTAL-(dist if dist is not None else km),2); kpdf=dist if dist is not None else km
+            base=dist if dist is not None else km
+            kini=round(TOTAL-base,2) if base is not None else None; kpdf=base
         else:
             kpdf=km
             kini=round(TOTAL-km,2) if km is not None else None
