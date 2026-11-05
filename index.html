@@ -18942,7 +18942,7 @@ const RAMAIS=[{id:'aguai',n:12,nome:'Aguaí',url:'https://caminhodafe.com.br/ptb
 {id:'santa-rita',n:16,nome:'Santa Rita de Cássia',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-16-Ramal-Santa-Rita-de-Cassia-Santa-Rita-de-Caldas-Edicao-19.0.pdf',nota:'Santa Rita de Caldas · Ouro Fino'},
 {id:'sao-jose',n:1,nome:'São José',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-01-Ramal-Sao-Jose-Edicao-19.0-1.pdf',nota:''},
 {id:'tambau',n:8,nome:'Tambaú',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-08-Ramal-Tambau-Edicao-19.0.pdf',nota:''}];
-const APP_VERSAO='4.7.9',APP_DATA='04/11/2026';
+const APP_VERSAO='4.7.10',APP_DATA='04/11/2026';
 const MULTI_RAMAL=false; /* escolha de ramais escondida por enquanto; mude para true para reativar */
 const SITE='https://caminhodafe.com.br/ptbr/pousadas/';
 
@@ -19009,8 +19009,8 @@ function amDetalhe(h){const a=h.comodidades||[];const g=Core.AMEN_GRUPOS.map(([n
 function lodCard(h,dist,eta,dias){const sit=Core.situacao(dist);const cls=sit==='para-tras'?'back':sit==='no-ponto'?'here':'';
   const dtxt=dist==null?'—':sit==='no-ponto'?'0':num(Math.abs(dist),1);
   const lbl=dist==null?t('card.sem_km'):sit==='para-tras'?t('card.atras'):sit==='no-ponto'?t('card.aqui'):t('card.frente');
-  return `<div class="card lod" data-card="${h.id}"><div class="d ${cls}"><b>${dtxt}</b><span>${lbl}</span></div><div class="m"><h3>${esc(h.nome)}</h3>
-  <div class="sub">${esc(h.municipio)}${h.uf?'/'+h.uf:''} · ${h.km_inicio!=null?`${t('ui.placa_km')} ${num(marco(h.km_inicio),1)} · ${num(h.km_inicio,1)} ${t('ui.km_desde')}`:t('card.sem_km')}</div>${novoTag(h)?`<div style="margin:4px 0 2px">${novoTag(h)}</div>`:''}
+  return `<div class="card lod" data-card="${h.id}"><div class="d ${cls}"><b>${dtxt}</b><span>${lbl}</span>${novoTag(h)?`<div style="margin-top:6px">${novoTag(h)}</div>`:''}</div><div class="m"><h3>${esc(h.nome)}</h3>
+  <div class="sub">${esc(h.municipio)}${h.uf?'/'+h.uf:''} · ${h.km_inicio!=null?`${t('ui.placa_km')} ${num(marco(h.km_inicio),1)} · ${num(h.km_inicio,1)} ${t('ui.km_desde')}`:t('card.sem_km')}</div>
   <div class="sub">${h.tipo==='hospedagem'?t('card.diaria')+esc(precoTxt(h)):esc(catLbl(h.categoria))}</div>
   ${eta?`<div class="sub"><b>${t('card.previsao')}${brDate(eta)}</b> (${dias===0?t('card.hoje'):dias+' '+(dias>1?t('card.dias'):t('card.dia'))} ${t('card.de_caminhada')}) ${t('card.estimativa')}</div>`:''}
   <div>${badges(h)}</div>${amChips(h)}
