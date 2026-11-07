@@ -18952,7 +18952,7 @@ const RAMAIS=[{id:'aguai',n:12,nome:'Aguaí',url:'https://caminhodafe.com.br/ptb
 {id:'santa-rita',n:16,nome:'Santa Rita de Cássia',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-16-Ramal-Santa-Rita-de-Cassia-Santa-Rita-de-Caldas-Edicao-19.0.pdf',nota:'Santa Rita de Caldas · Ouro Fino'},
 {id:'sao-jose',n:1,nome:'São José',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-01-Ramal-Sao-Jose-Edicao-19.0-1.pdf',nota:''},
 {id:'tambau',n:8,nome:'Tambaú',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-08-Ramal-Tambau-Edicao-19.0.pdf',nota:''}];
-const APP_VERSAO='4.7.21',APP_DATA='07/11/2026';
+const APP_VERSAO='4.7.22',APP_DATA='07/11/2026';
 const MULTI_RAMAL=false; /* escolha de ramais escondida por enquanto; mude para true para reativar */
 const SITE='https://caminhodafe.com.br/ptbr/pousadas/';
 
@@ -18990,6 +18990,9 @@ const FL={am:[],q:'',municipio:'',categoria:'',tipo:'hospedagem',revisar:false,n
 const FR={status:'todas',arq:false};const FF={max:10,kind:'todos',n:6};let PEND=null,pendUrl='',deferredInstall=null;const FE={comida:{de:'',ate:''},custos:{de:'',ate:''}};
 let lastPdf=null;
 /* ---------- funções de apoio ---------- */
+
+/* ao tocar em um campo de digitação, todo o conteúdo fica selecionado: o que o usuário digitar substitui o valor exibido (ex.: 0) */
+document.addEventListener('focusin',(e)=>{const el=e.target;if(!el||!el.matches)return;if(el.matches('input:not([type=checkbox]):not([type=radio]):not([type=date]):not([type=button]):not([type=submit]):not([readonly]):not([disabled]),textarea')){setTimeout(()=>{try{el.select();}catch(_){}},0);}});
 const pos=()=>Core.kmAtual(S);
 /* ---------- perfil altimétrico (valores aproximados; ver relatório de dados) ---------- */
 let mapaModo='planta';let AV={s:1,tx:0,ty:0};
