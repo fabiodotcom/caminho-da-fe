@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#3F5B3A"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="icon-180.png"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Caminho da Fé"><meta name="color-scheme" content="light">
 <title>Meu Caminho da Fé</title>
 <style>
-:root{color-scheme:light;--warnbg:#FBE4D4;--note:#FFF6DD;--noteb:#E8D28A;--notet:#5a4a10;--line2:#eee3cf;--kbg:#E8E8E8;color-scheme:light;--moss:#3F5B3A;--moss-d:#2C4129;--moss-l:#DDE6D3;--sand:#EFE8D8;--paper:#FBF8F1;--card:#fff;--clay:#A5603A;--ink:#26301F;--mute:#6B6A58;--line:#DDD3BC;--warn:#B3541E;--ok:#2F7A3E;--arrow:#F2C230;--r:14px}
+:root{color-scheme:light;--warnbg:#FBEBDD;--note:#FFF6DD;--noteb:#E8D28A;--notet:#5a4a10;--line2:#EFE7D4;--kbg:#E8E8E8;--moss:#3F5B3A;--moss-d:#2C4129;--moss-l:#E4EBDD;--sand:#F3ECDC;--paper:#FBF7EE;--card:#FFFFFF;--clay:#7A3E1E;--ink:#1F2A1B;--mute:#4E4C3F;--line:#E3D9C2;--warn:#7A3E1E;--ok:#2F7A3E;--arrow:#F2C230;--r:14px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root[data-theme=dark]{--paper:#161a14;--card:#1f261c;--ink:#e9e6da;--mute:#a9ab97;--line:#3a4434;--line2:#2c3527;--sand:#2b3326;--moss-l:#2d3c29;--moss:#4f7348;--moss-d:#c5dbb2;--clay:#d98e62;--warn:#ff9a63;--ok:#7fd08c;--warnbg:#4a2a19;--note:#3a3316;--noteb:#6b5c20;--notet:#efe0a6;--kbg:#2f372b;color-scheme:dark}
 
@@ -70,7 +70,8 @@ nav.tabs button.on{color:var(--moss);font-weight:700;box-shadow:inset 0 3px 0 va
 .chip{border:1.5px solid var(--line);background:var(--card);border-radius:99px;padding:7px 13px;font-size:.85rem;white-space:nowrap;cursor:pointer;color:var(--ink)}
 .chip.on{background:var(--moss);border-color:var(--moss);color:#fff}
 .badge{display:inline-block;font-size:.7rem;border-radius:6px;padding:2px 7px;background:var(--sand);color:var(--moss-d);margin:2px 4px 2px 0}
-.badge.w{background:var(--warnbg);color:var(--warn)}.badge.g{background:var(--moss-l);color:var(--moss-d)}.badge.k{background:var(--kbg);color:var(--mute)}
+.badge.w{background:var(--warnbg);color:var(--warn)}.badge.g{background:var(--moss-l);color:var(--moss-d)}
+.badge.novo{background:var(--moss);color:#fff;font-weight:700;font-size:.78rem;padding:4px 10px;border-radius:999px}.badge.k{background:var(--kbg);color:var(--mute)}
 .lod{display:flex;gap:12px}.lod .d{flex:none;width:76px;text-align:center;border-right:1px dashed var(--line);padding-right:10px}
 .lod .d b{display:block;font:700 1.7rem/1 "Iowan Old Style",Palatino,Georgia,serif;color:var(--moss)}.lod .d span{font-size:.7rem;color:var(--mute)}
 .lod .d.back b{color:var(--mute)}.lod .d.here b{color:var(--clay)}
@@ -18943,7 +18944,7 @@ const RAMAIS=[{id:'aguai',n:12,nome:'Aguaí',url:'https://caminhodafe.com.br/ptb
 {id:'santa-rita',n:16,nome:'Santa Rita de Cássia',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-16-Ramal-Santa-Rita-de-Cassia-Santa-Rita-de-Caldas-Edicao-19.0.pdf',nota:'Santa Rita de Caldas · Ouro Fino'},
 {id:'sao-jose',n:1,nome:'São José',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-01-Ramal-Sao-Jose-Edicao-19.0-1.pdf',nota:''},
 {id:'tambau',n:8,nome:'Tambaú',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-08-Ramal-Tambau-Edicao-19.0.pdf',nota:''}];
-const APP_VERSAO='4.7.13',APP_DATA='04/11/2026';
+const APP_VERSAO='4.7.15',APP_DATA='04/11/2026';
 const MULTI_RAMAL=false; /* escolha de ramais escondida por enquanto; mude para true para reativar */
 const SITE='https://caminhodafe.com.br/ptbr/pousadas/';
 
@@ -18993,7 +18994,7 @@ function contatoBtns(h,full){const ph=fone(h);let o='';const wa=ph.map(p=>({p,l:
   const first=ph[0];if(first&&!full)o+=ib('phone',t('det.ligar'),`tel:+55${Core.foneInfo(first.numero).digits}`);
   return o;}
 function sitBadge(d){const s=Core.situacao(d);return s==='para-tras'?'<span class="badge back">'+t('sit.atras')+'</span>':s==='no-ponto'?'<span class="badge g">'+t('sit.aqui')+'</span>':s==='a-frente'?'<span class="badge g">'+t('sit.frente')+'</span>':'<span class="badge w">sem km</span>';}
-function novoTag(h){return (S.baseInfo&&(S.novosEdicao||[]).includes(h.id))?'<span class="badge g">'+t('ui.novo')+'</span>':'';}
+function novoTag(h){return (S.baseInfo&&(S.novosEdicao||[]).includes(h.id))?'<span class="badge novo">'+t('ui.novo')+'</span>':'';}
 function badges(h){let b='';if(!S.novosEdicao){S.novosEdicao=(S.baseInfo&&S.baseInfo.edicao&&S.baseInfo.edicao!=='19.0')?S.hosp.filter(x=>!BASE_IDS.has(x.id)).map(x=>x.id):[];}if(isFav(h))b+='<span class="badge fav">★ Favorito</span>';if(h.credencial)b+='<span class="badge g">'+t('am.credencial')+'</span>';if(h.ramal)b+=`<span class="badge">ramal ${h.ramal==='P'?'Pindamonhangaba':'Guaratinguetá'}</span>`;
   if(h.fora_trilha_km)b+=`<span class="badge">${num(h.fora_trilha_km*1000,0)} ${t('ui.m_fora')}</span>`;if(h.revisar&&h.revisar.length)b+='<span class="badge w">'+t('ui.conferir_dados')+'</span>';
   
@@ -19067,7 +19068,7 @@ function traduzTextoSistema(txt){const l=(S&&S.cfg&&S.cfg.idioma)||'pt';if(l==='
 /* troca as marcas ⟦chave⟧ pelos textos do idioma escolhido */
 function localizar(root){if(!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const nodes=[];while(w.nextNode())nodes.push(w.currentNode);
   nodes.forEach(nd=>{if(nd.nodeValue.indexOf('⟦')>=0)nd.nodeValue=nd.nodeValue.replace(/⟦([^⟧]+)⟧/g,(m,k)=>t(k));nd.nodeValue=traduzTextoSistema(nd.nodeValue);});}
-function render(){document.documentElement.classList.toggle('big',!!S.cfg.grande);const dark=S.cfg.tema==='escuro'||(S.cfg.tema!=='claro'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=dark?'dark':'light';document.documentElement.style.colorScheme=dark?'dark':'light';const mcs=document.querySelector('meta[name="color-scheme"]');if(mcs)mcs.content=dark?'dark':'light';document.body.classList.toggle('hc',!!S.cfg.contraste);
+function render(){document.documentElement.classList.toggle('big',!!S.cfg.grande);const dark=S.cfg.tema==='escuro'||(S.cfg.tema!=='claro'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=dark?'dark':'light';document.documentElement.style.colorScheme=dark?'dark':'light';const mcs=document.querySelector('meta[name="color-scheme"]');if(mcs)mcs.content=dark?'dark':'light';
   if(!MULTI_RAMAL&&!S.ramalId)trocarRamal('aguas-da-prata');
   $('#sub').textContent='';
   if(!S.ramalId){$('#nav').style.display='none';$('#main').innerHTML=vOnboarding();return;}
@@ -19234,7 +19235,7 @@ function vConfig(){const c=S.cfg,f=Core.finance(S,hoje());const ini=parseISO(c.i
   <label class="f">⟦cfg.06⟧</label><select name="moeda"><option value="BRL">⟦cfg.07⟧</option></select>
   <label class="f">⟦cfg.08⟧</label><select name="ramal"><option value="todos" ${c.ramal==='todos'?'selected':''}>⟦cfg.09⟧</option><option value="P" ${c.ramal==='P'?'selected':''}>⟦cfg.10⟧</option><option value="G" ${c.ramal==='G'?'selected':''}>⟦cfg.11⟧</option></select>
   <div class="row2"><div><label class="f">⟦cfg.12⟧</label><select name="tema"><option value="auto" ${c.tema==='auto'?'selected':''}>⟦cfg.13⟧</option><option value="claro" ${c.tema==='claro'?'selected':''}>⟦cfg.14⟧</option><option value="escuro" ${c.tema==='escuro'?'selected':''}>⟦cfg.15⟧</option></select></div><div><label class="f">⟦cfg.16⟧</label><select name="modoKm"><option value="marco" ${c.modoKm!=='percorrido'?'selected':''}>⟦cfg.17⟧</option><option value="percorrido" ${c.modoKm==='percorrido'?'selected':''}>⟦cfg.18⟧</option></select></div></div>
-  <label class="f"><input type="checkbox" name="btnIcones" ${c.btnIcones!==false?'checked':''} style="width:auto;min-height:0"> ⟦cfg.19⟧</label><label class="f"><input type="checkbox" name="grande" ${c.grande?'checked':''} style="width:auto;min-height:0"> ⟦cfg.20⟧</label><label class="f"><input type="checkbox" name="contraste" ${c.contraste?'checked':''} style="width:auto;min-height:0"> ⟦cfg.21⟧</label><label class="f"><input type="checkbox" name="favTopo" ${c.favTopo!==false?'checked':''} style="width:auto;min-height:0"> ⟦cfg.22⟧</label><label class="f"><input type="checkbox" name="credTopo" ${c.credTopo?'checked':''} style="width:auto;min-height:0"> ⟦cfg.23⟧</label><label class="f"><input type="checkbox" name="autoArquivar" ${c.autoArquivar!==false?'checked':''} style="width:auto;min-height:0"> ⟦cfg.24⟧</label>
+  <label class="f"><input type="checkbox" name="btnIcones" ${c.btnIcones!==false?'checked':''} style="width:auto;min-height:0"> ⟦cfg.19⟧</label><label class="f"><input type="checkbox" name="grande" ${c.grande?'checked':''} style="width:auto;min-height:0"> ⟦cfg.20⟧</label><label class="f"><input type="checkbox" name="favTopo" ${c.favTopo!==false?'checked':''} style="width:auto;min-height:0"> ⟦cfg.22⟧</label><label class="f"><input type="checkbox" name="credTopo" ${c.credTopo?'checked':''} style="width:auto;min-height:0"> ⟦cfg.23⟧</label><label class="f"><input type="checkbox" name="autoArquivar" ${c.autoArquivar!==false?'checked':''} style="width:auto;min-height:0"> ⟦cfg.24⟧</label>
   <div class="stat" style="margin:12px 0"><span>⟦cfg.25⟧</span><b>${fim?brDate(fim):'informe início, média e distância total'}</b></div><div id="cfgErr"></div><button class="btn" style="width:100%">⟦cfg.26⟧</button></form>
   <div class="card"><h3>⟦cfg.27⟧</h3><p class="small">⟦cfg.28⟧</p><div class="actions"><button class="btn" data-a="bkout">⟦cfg.29⟧</button><button class="btn alt" data-a="bkin">⟦cfg.30⟧</button><button class="btn out" data-a="bkcopy">⟦cfg.31⟧</button><button class="btn out" data-a="bkpaste">⟦cfg.32⟧</button></div></div>
   <div class="card"><h3>⟦cfg.33⟧</h3>${isStandalone()?'<p class="small">⟦cfg.34⟧</p>':'<p class="small">⟦cfg.35⟧</p><button class="btn" data-a="instalar">⟦cfg.36⟧</button>'}</div>
@@ -19590,7 +19591,7 @@ document.addEventListener('submit',async(e)=>{e.preventDefault();const f=e.targe
     const E=(m)=>{$('#cfgErr').innerHTML=`<div class="err">${esc(m)}</div>`;};
     if(!parseISO(v('inicio')))return E(t('val.12'));if(isNaN(km))return E(t('val.13'));if(isNaN(media)||media<=0)return E(t('val.02'));if(isNaN(tot))return E(t('val.07'));if(tot&&tot<=km)return E(t('val.00'));
     if(orc!==''&&isNaN(orc))return E(t('val.16'));if(oa!==''&&isNaN(oa))return E(t('val.15'));if(isNaN(ds)||ds<0)return E(t('val.06'));
-    Object.assign(S.cfg,{idioma:v('idioma')||'pt',inicio:v('inicio'),kmInicial:km,media,total:tot,orcamento:orc,orcAlim:oa,descanso:ds,ramal:v('ramal'),proxy:v('proxy'),tema:v('tema'),modoKm:v('modoKm'),grande:f.grande.checked,contraste:f.contraste.checked,credTopo:f.credTopo.checked,favTopo:f.favTopo.checked,autoArquivar:f.autoArquivar.checked,btnIcones:f.btnIcones.checked});save();render();toast(t('msg.05'));return;}
+    Object.assign(S.cfg,{idioma:v('idioma')||'pt',inicio:v('inicio'),kmInicial:km,media,total:tot,orcamento:orc,orcAlim:oa,descanso:ds,ramal:v('ramal'),proxy:v('proxy'),tema:v('tema'),modoKm:v('modoKm'),grande:f.grande.checked,credTopo:f.credTopo.checked,favTopo:f.favTopo.checked,autoArquivar:f.autoArquivar.checked,btnIcones:f.btnIcones.checked});save();render();toast(t('msg.05'));return;}
   if(f.id==='fH'){const nome=v('nome');if(!nome)return err(t('val.09'));const km=v('km_inicio')?parseKm(v('km_inicio')):null;if(km!==null&&isNaN(km))return err(t('val.17'));
     const kp=v('km_pdf')?parseKm(v('km_pdf')):null;if(kp!==null&&isNaN(kp))return err(t('val.14'));const pmin=v('preco_min')?parseMoney(v('preco_min')):null,pmax=v('preco_max')?parseMoney(v('preco_max')):null;if((pmin!==null&&isNaN(pmin))||(pmax!==null&&isNaN(pmax)))return err(t('val.20'));if(pmin!==null&&pmax!==null&&pmax<pmin)return err(t('val.01'));
     const tel=v('telefones').split('|').map(s=>s.trim()).filter(Boolean).map(s=>({numero:s.replace('*','').trim(),whatsapp:s.includes('*')}));
