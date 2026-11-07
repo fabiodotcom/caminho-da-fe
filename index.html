@@ -36,6 +36,10 @@ svg.mapa text{font:600 10px system-ui,sans-serif;fill:var(--ink)}svg.mapa .mu{fi
 #altsvgbox{touch-action:none;cursor:grab;border-radius:12px;overflow:hidden;background:var(--sand)}
 #altsvgbox svg{display:block;width:100%;height:auto}
 .mapctl button.on{background:var(--moss);color:#fff}
+.item>span{min-width:0;overflow-wrap:anywhere;word-break:break-word}
+.item>span:first-child{flex:0 1 40%}
+.item>span:last-child{flex:1 1 0;text-align:right}
+dialog .bd{overflow-x:hidden;overflow-y:auto}
 body.hc{--mute:#3d3d30;--line:#9d927a;--paper:#fff}
 :root[data-theme=dark] body.hc{--mute:#f2efe2;--ink:#ffffff;--line:#b9b08f;--paper:#101410;--card:#1f261c}
 h1,h2,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;margin:0;color:var(--moss-d)}
@@ -18948,7 +18952,7 @@ const RAMAIS=[{id:'aguai',n:12,nome:'Aguaí',url:'https://caminhodafe.com.br/ptb
 {id:'santa-rita',n:16,nome:'Santa Rita de Cássia',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-16-Ramal-Santa-Rita-de-Cassia-Santa-Rita-de-Caldas-Edicao-19.0.pdf',nota:'Santa Rita de Caldas · Ouro Fino'},
 {id:'sao-jose',n:1,nome:'São José',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-01-Ramal-Sao-Jose-Edicao-19.0-1.pdf',nota:''},
 {id:'tambau',n:8,nome:'Tambaú',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-08-Ramal-Tambau-Edicao-19.0.pdf',nota:''}];
-const APP_VERSAO='4.7.20',APP_DATA='07/11/2026';
+const APP_VERSAO='4.7.21',APP_DATA='07/11/2026';
 const MULTI_RAMAL=false; /* escolha de ramais escondida por enquanto; mude para true para reativar */
 const SITE='https://caminhodafe.com.br/ptbr/pousadas/';
 
