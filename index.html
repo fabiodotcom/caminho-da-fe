@@ -18953,7 +18953,7 @@ const RAMAIS=[{id:'aguai',n:12,nome:'Aguaí',url:'https://caminhodafe.com.br/ptb
 {id:'santa-rita',n:16,nome:'Santa Rita de Cássia',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-16-Ramal-Santa-Rita-de-Cassia-Santa-Rita-de-Caldas-Edicao-19.0.pdf',nota:'Santa Rita de Caldas · Ouro Fino'},
 {id:'sao-jose',n:1,nome:'São José',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-01-Ramal-Sao-Jose-Edicao-19.0-1.pdf',nota:''},
 {id:'tambau',n:8,nome:'Tambaú',url:'https://caminhodafe.com.br/ptbr/wp-content/uploads/2026/10/Planilha-08-Ramal-Tambau-Edicao-19.0.pdf',nota:''}];
-const APP_VERSAO='4.7.27',APP_DATA='17/11/2026';
+const APP_VERSAO='4.7.28',APP_DATA='17/11/2026';
 const MULTI_RAMAL=false; /* escolha de ramais escondida por enquanto; mude para true para reativar */
 const SITE='https://caminhodafe.com.br/ptbr/pousadas/';
 
@@ -19179,8 +19179,7 @@ function notificarRamal(){openDlg('Ramal de finalização',`<p>Você fez check-i
 function tr(k){return t(k);}
 function pgLbl(x){return ({'não pago':t('ui.pg_nao'),'pago':t('ui.pg_pago'),'parcialmente pago':t('ui.pg_parc')})[x]||x;}
 function nomeApp(){const el=document.getElementById('appName');if(el)el.textContent=t('ui.app_header');document.title=t('ui.app_nome');}
-let alertaCJFechado=false;
-function alertaCJ(){if(alertaCJFechado)return'';const falta=S.cfg.ramal!=='P'&&S.cfg.ramal!=='G';
+function alertaCJ(){if(S.cjFechado)return'';const falta=S.cfg.ramal!=='P'&&S.cfg.ramal!=='G';
   return `<div class="warnbox"><b>${t('cj.titulo')}</b> ${t('cj.texto')}<div class="actions"><button class="btn sm out" data-a="cjfechar">${t('cj.fechar')}</button></div>${falta?`<p class="small" style="margin:8px 0 0"><b>${t('cj.escolha')}</b></p><div class="actions"><button class="btn sm" data-a="ramalfim" data-v="P">Pindamonhangaba</button><button class="btn sm" data-a="ramalfim" data-v="G">Guaratinguetá</button></div>`:''}</div>`;}
 function vInicio(){const at=pos(),f=Core.finance(S,hoje()),tot=Number(S.cfg.total)||0,ki=Number(S.cfg.kmInicial)||0,media=Number(S.cfg.media)||0;
   const perc=Math.max(0,at-ki);const pct=tot>ki?Math.min(100,perc/(tot-ki)*100):null;const ini=parseISO(S.cfg.inicio);
@@ -19190,7 +19189,7 @@ function vInicio(){const at=pos(),f=Core.finance(S,hoje()),tot=Number(S.cfg.tota
   const munis=[...new Set(S.hosp.map(h=>h.municipio).filter(Boolean))];const cats=[...new Set(S.hosp.filter(h=>F.tipo==='todos'||h.tipo===F.tipo).map(h=>h.categoria))];
   const fimEst=ini&&f.diasTotal!=null?addDays(ini,Math.max(f.diasTotal-1,0)+(Number(S.cfg.descanso)||0)):null;
   const acA=pos();const modoTxt=(Core.TRANSP.find(t=>t[0]===(S.cfg.transporte||'pe'))||[0,'A pé'])[1];
-  let h=dicaInstalar()+``+(acA>=221&&acA<=261?alertaCJ():(alertaCJFechado=false,''))+`<div class="hero"><label for="kmIn">${modoMarco()?t('ini.marco_onde'):t('ini.km_percorridos')}</label><div class="kmrow"><input id="kmIn" inputmode="decimal" placeholder="${modoMarco()?String(Core.REF):'0'}" value="${S.kmHist.length?kmTxt(modoMarco()?marco(at):at):''}" aria-label="Quilometragem atual"><button class="btn arrow-btn" data-a="savekm">⟦ui.atualizar_pos⟧</button></div>
+  let h=dicaInstalar()+``+(acA>=221&&acA<=261?alertaCJ():((S.cjFechado&&(S.cjFechado=false,save())),''))+`<div class="hero"><label for="kmIn">${modoMarco()?t('ini.marco_onde'):t('ini.km_percorridos')}</label><div class="kmrow"><input id="kmIn" inputmode="decimal" placeholder="${modoMarco()?String(Core.REF):'0'}" value="${S.kmHist.length?kmTxt(modoMarco()?marco(at):at):''}" aria-label="Quilometragem atual"><button class="btn arrow-btn" data-a="savekm">⟦ui.atualizar_pos⟧</button></div>
   <p class="note">${modoMarco()?`${t('ui.explica_placa').replace('{0}',Core.REF)}`:t('ui.digite_km')} ${t('ui.pos_info')} ${S.kmHist.length?brDateTime(S.kmHist[S.kmHist.length-1].quando):t('ui.nenhuma_ainda')}.</p>
   ${pct!=null?`<div class="bar"><i style="width:${pct}%"></i></div><p class="note">${num(pct,1)}% ${t('ui.do_percurso')} · ${t('ui.faltam')} ${num(Math.max(tot-at,0),1)} km</p>`:''}</div>
   <div class="grid">
@@ -19550,7 +19549,7 @@ document.addEventListener('click',async(e)=>{const el=e.target.closest('[data-a]
   case'fam':{const k=el.dataset.k;F.am=F.am.includes(k)?F.am.filter(x=>x!==k):[...F.am,k];F.n=15;render();break;}case'famclr':F.am=[];F.n=15;render();break;
   case'flam':{const k=el.dataset.k;FL.am=FL.am.includes(k)?FL.am.filter(x=>x!==k):[...FL.am,k];FL.n=40;render();break;}case'flamclr':FL.am=[];FL.n=40;render();break;
   case'mz':zoomMap(+el.dataset.v>0?1.5:1/1.5);break;case'mfull':mapaModo='planta';MV={x:0,y:0,w:MAPW,h:MAPH};render();break;case'mfocus':if(mapaModo==='alt'){centralizaAlt();break;}MV=null;drawMap();break;case'malt':mapaModo='alt';AV={s:1,tx:0,ty:0};render();break;
-  case'gps':pedirGps();break;case'gpsfechar':GPS=null;GPSMSG='';render();break;case'cjfechar':alertaCJFechado=true;render();break;case'gpsw':GF.w=+el.dataset.v;render();break;case'gpsk':GF.kind=el.dataset.v;render();break;
+  case'gps':pedirGps();break;case'gpsfechar':GPS=null;GPSMSG='';render();break;case'cjfechar':S.cjFechado=true;save();render();break;case'gpsw':GF.w=+el.dataset.v;render();break;case'gpsk':GF.kind=el.dataset.v;render();break;
   case'gpsusar':{if(!GPS)break;const acc=Core.round2(GPS.km);if(!await ask(t('gps.def_pos').replace('{0}',num(marco(acc),1)).replace('{1}',num(acc,1)),t('gps.usar_pos_btn')))break;MV=null;S.kmHist.push({id:Core.uid('k'),km:acc,quando:new Date().toISOString()});save();render();toast(t('msg.24'));break;}
   case'pickramal':{const r=RAMAIS.find(x=>x.id===id);closeDlg();const novo=!(S.hospStore[id]||id==='aguas-da-prata');trocarRamal(id);S.tab=novo?'pousadas':'inicio';save();render();window.scrollTo(0,0);if(novo)dlgBaixar(r,true);else toast(t('msg.25')+r.nome+' selecionado');break;}
   case'trocarramal':openDlg('Trocar de ramal','<p class="small">Reservas e gastos são mantidos. A lista de pousadas e a posição (km) são guardadas separadamente para cada ramal.</p>'+listaRamais());break;
